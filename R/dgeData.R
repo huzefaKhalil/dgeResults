@@ -248,10 +248,12 @@ setMethod("geneId", signature = "dgeData", function(o) o@ids$id)
 # generic functions we will use
 getExperiments <- function(o) stop("Method undefined for an object of this class.")
 getExperimentsBySpecies <- function(o, species) stop("Method undefined for an object of this class.")
+getColumnData <- function(o, column, comparisonID, conn) stop("Method undefined for an object of this class.")
 symbolToId <- function(o, ...) stop("Method undefined for an object of this class.")
 
 setGeneric("getExperiments", function(o, species) { standardGeneric("getExperiments") })
 setGeneric("getExperimentsBySpecies", function(o, species) { standardGeneric("getExperimentsBySpecies") })
+setGeneric("getColumnData", function(o, column, comparisonID, conn) { standardGeneric("getColumnData") })
 setGeneric("symbolToId", function(o, ...) { standardGeneric("symbolToId") })
 
 #' Get all experiments in a data set.
@@ -293,6 +295,46 @@ setMethod("getExperimentsBySpecies", signature = "dgeData", function(o, species)
         NULL
     else
         new("dgeData", experiments = experiments, ids = o@ids)
+})
+
+#' Get column data for particular comparisons
+#'
+#' @param o An object of class \code{dgeData}
+#' @param column This can be any column name in the \code{data.table} returned by \code{flattenDge}. These include
+#'               \enumerate{
+#'                   \item logFC
+#'                   \item se
+#'                   \item pvalue
+#'                   \item fdr
+#'                   \item cohensD
+#'                   \item varD
+#'                   \item hedgesG
+#'                   \item varG
+#'               }
+#' @param comparisonID The comparison IDs for which the data is needed
+#' @param conn The connection to the SQLite DB if the data is stored there
+#'
+#' @return A data.table with columns as comparisonIDs
+#' @export
+#'
+#' @examples
+setMethod("getColumnData", signature = "dgeData", function(o, column, comparisonID, conn = NULL) {
+
+    validCols <- c("logFC", "se", "pvalue", "fdr", "cohensD", "varD", "hedgesG", "varG")
+
+    if (length(column) != 1)
+        stop("The column supplied to method 'getColumnData' isn't of length 1.")
+    if (!(column %in% validCols))
+        stop("In method 'getColumnData', the supplied column isn't valid. Must be one of ", paste(validCols, collapse=", "), " but is ", column)
+
+    # get the data using flattenDge
+    fd <- flattenDge(o, conn = conn)
+
+    # make it wide
+    pMat <- dcast(fd, id ~ comparisonID, value.var = column)
+    pMat$symbol <- o@id[pMat]$compound.symbol
+
+    return(pMat)
 })
 
 #' Converts human gene symbols to the internal IDs used by the package.
@@ -380,31 +422,35 @@ setMethod("flattenDge", signature = "dgeData", function(o, geneId = NULL, conn =
         if (!is(conn, "SQLiteConnection"))
             stop("In function 'flattenDge', a connection object is given but it is not of the class 'SQLiteConnection'.")
 
-        if (is.null(geneId) || length(geneId) == 0)
-            stop("In function 'flattenDge', a connection object is given but the 'geneId' are not.")
-
         # so, connection exists and the object 'o' is assumed to be a lite object
         comparisons <- names(printComparison(o))
 
         # check which ones are reversed
         toRev <- which(grepl("^-", comparisons))
 
-        # first, get the data
+        # first, get the comparisons.
         selectedComparisons <- gsub("^-", "", comparisons)
-        selectedGenes <- geneId   # Not checking here to ensure that these are valid ids... Assuming they will be
-
-        # let's make the query
-        gPlaceholder <- paste0("$gene", seq_along(selectedGenes))
         cPlaceholder <- paste0("$comparison", seq_along(selectedComparisons))
 
-        sqlQuery <- paste0("SELECT *
+        # check if genes are specified... if not, then we select only by comparison ID
+        if (is.null(geneId) || length(geneId) == 0) {
+            sqlQuery <- paste0("SELECT *
                            FROM comparisonData
-                           WHERE comparisonID IN (", paste(cPlaceholder, collapse = ","), ")
-                           AND id IN (", paste(gPlaceholder, collapse = ","), ")")
+                               WHERE comparisonID IN (", paste(cPlaceholder, collapse = ","), ")")
+            cParams <- as.list(setNames(selectedComparisons, gsub("\\$", "", cPlaceholder)))
+            paramList <- cParams
+        } else {
+            selectedGenes <- geneId   # Not checking here to ensure that these are valid ids... Assuming they will be
+            gPlaceholder <- paste0("$gene", seq_along(selectedGenes))
+            sqlQuery <- paste0("SELECT *
+                           FROM comparisonData
+                               WHERE comparisonID IN (", paste(cPlaceholder, collapse = ","), ")
+                               AND id IN (", paste(gPlaceholder, collapse = ","), ")")
 
-        gParams <- as.list(setNames(selectedGenes, gsub("\\$", "", gPlaceholder)))
-        cParams <- as.list(setNames(selectedComparisons, gsub("\\$", "", cPlaceholder)))
-        paramList <- c(cParams, gParams)
+            cParams <- as.list(setNames(selectedComparisons, gsub("\\$", "", cPlaceholder)))
+            gParams <- as.list(setNames(selectedGenes, gsub("\\$", "", gPlaceholder)))
+            paramList <- c(cParams, gParams)
+        }
 
         outDT <- data.table(dbGetQuery(conn, sqlQuery, param = paramList))
         setkey(outDT, id)
