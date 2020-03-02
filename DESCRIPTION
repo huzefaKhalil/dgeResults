@@ -1,4 +1,4 @@
-Package: DGEData
+Package: dgeResults
 Type: Package
 Title: Data Types to store DGE Results Data
 Version: 0.1.0
