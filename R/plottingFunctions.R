@@ -55,10 +55,10 @@ smoothForest <- function(hData,
     # 7) Combine and return the plots
 
     if (!is.data.table(hData))
-        stop("Input to the 'smoothForest' method must be a 'dgeData' or a 'data.table'.")
+        stop("Input to the 'smoothForest' method must be a 'data.table'.")
 
     # step 2: split by unique genes
-    hData$compund.symbol <- ids[hData]$compound.symbol
+    hData$compound.symbol <- ids[hData]$compound.symbol
 
     hData <- split(hData, by = "compound.symbol")
 
