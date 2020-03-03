@@ -198,6 +198,7 @@
     })
 
     ids$compound.symbol <- compound.symbol
+    ids$compound.symbol <- ifelse(ids$compound.symbol != "", ids$compound.symbol, ids$id)
 
     o@ids <- ids
 

@@ -328,11 +328,14 @@ setMethod("getColumnData", signature = "dgeData", function(o, column, comparison
         stop("In method 'getColumnData', the supplied column isn't valid. Must be one of ", paste(validCols, collapse=", "), " but is ", column)
 
     # get the data using flattenDge
+    if (!is.null(comparisonID) || length(comparisonID) != 0) # if any of these are true, assume that the data set has only required ids
+        o <- getComparisonById(o, comparisonID)
+
     fd <- flattenDge(o, conn = conn)
 
     # make it wide
     pMat <- dcast(fd, id ~ comparisonID, value.var = column)
-    pMat$symbol <- o@id[pMat]$compound.symbol
+    pMat$symbol <- o@ids[pMat]$compound.symbol
 
     return(pMat)
 })

@@ -4,6 +4,8 @@
 #' @importFrom ggpubr as_ggplot
 #' @importFrom gridExtra arrangeGrob
 #' @importFrom heatmaply heatmaply
+#' @importFrom grid textGrob
+#' @importFrom grid gpar
 NULL
 
 #' Title
@@ -56,10 +58,12 @@ smoothForest <- function(hData,
         stop("Input to the 'smoothForest' method must be a 'dgeData' or a 'data.table'.")
 
     # step 2: split by unique genes
-    hData <- split(hData, by = "id")
+    hData$compund.symbol <- ids[hData]$compound.symbol
+
+    hData <- split(hData, by = "compound.symbol")
 
     # next, loop over each genes
-    outPlots <- lapply(hData, function(x) {
+    outPlots <- Map(function(x, nx) {
 
         x <- .order(x, orderBy, estimate)
 
@@ -87,8 +91,10 @@ smoothForest <- function(hData,
         # layout <- matrix(c(rep(1, times = 1 + ncol(metaData)), 2, 2, 2, 2, 2), nrow = 1)
         # as_ggplot(gridExtra::arrangeGrob(metaPlot, forestPlot, layout_matrix = layout))
         ggpubr::as_ggplot(gridExtra::arrangeGrob(metaPlot, forestPlot, nrow=1,
-                                                 top = geneSymbol, padding = unit(1, "line")))
-    })
+                                                 top = grid::textGrob(label = geneSymbol,
+                                                                      gp = grid::gpar(fontsize=17, fontface=2)),
+                                                 padding = unit(1, "line")))
+    }, hData, names(hData))
 
     return(outPlots)
 }
