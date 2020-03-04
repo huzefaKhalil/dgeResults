@@ -28,18 +28,21 @@
     cNames <- unique(hd[, c("comparisonID", "name", "model", "region", "comparison", "treatment", "sex", "timepoint")])
     cNames <- cNames[match(colnames(pMat), cNames$comparisonID)]
 
-    hoverTextCols <- paste0("Experiment  : ", cNames$name, "\n",
-                            "Model       : ", cNames$model, "\n",
+    hoverTextCols <- paste0("Experiment: ", cNames$name, "\n",
+                            "Model: ", cNames$model, "\n",
                             "Brain region: ", cNames$region, "\n",
-                            "Comparison  : ", cNames$comparison, "\n",
-                            "Sex         : ", cNames$sex, "\n",
-                            "Treatment   : ", cNames$treatment, "\n",
-                            "Timepoint   : ", cNames$timepoint, "\n")
-    hoverTextRows <- paste0("Gene Name   : ", row.names(pMat), "\n")
+                            "Comparison: ", cNames$comparison, "\n",
+                            "Sex: ", cNames$sex, "\n",
+                            "Treatment: ", cNames$treatment, "\n",
+                            "Timepoint: ", cNames$timepoint, "\n")
+    hoverTextRows <- paste0("Gene Name: ", row.names(pMat), "\n")
 
     hoverTextMat <- matrix(paste0(rep(hoverTextRows, each=length(hoverTextCols)), hoverTextCols),
                            nrow = length(hoverTextRows),
                            ncol = length(hoverTextCols), byrow = TRUE)
+
+    # add the gene estimate
+    hoverTextMat <- matrix(paste0(hoverTextMat, "Estimate: ", round(pMat, digits = 4)), ncol = ncol(pMat), nrow = nrow(pMat))
 
     #colnames(pMat) <- cNames$name
 
