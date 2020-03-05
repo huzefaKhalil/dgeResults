@@ -4,10 +4,27 @@
 \alias{printComparison,dgeComparison-method}
 \title{Print the comparison, namely Group1 - Group2}
 \usage{
-\S4method{printComparison}{dgeComparison}(o)
+\S4method{printComparison}{dgeComparison}(
+  o,
+  name = FALSE,
+  region = FALSE,
+  treatment = FALSE,
+  housing = FALSE,
+  timepoint = FALSE
+)
 }
 \arguments{
 \item{o}{An object of class \code{dgeComparison}}
+
+\item{name}{Logical, indicating if the name of the experiment should be printed. Default \code{FALSE}.}
+
+\item{region}{Logical, indicating if the brain region of the comparison should be printed. Default \code{FALSE}.}
+
+\item{treatment}{Logical, indicating if the treatment of the comparison should be printed. Default \code{FALSE}.}
+
+\item{housing}{Logical, indicating if the housing of the comparison should be printed. Default \code{FALSE}.}
+
+\item{timepoint}{Logical, indicating if the timepoint of the comparison should be printed. Default \code{FALSE}.}
 }
 \value{
 String with the specified comparison

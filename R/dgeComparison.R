@@ -178,7 +178,7 @@ geneId <- function(o) stop("Method undefined for an object of this class.")
 `geneId<-` <- function(o, value) stop("Method undefined for an object of this class.")
 reverseComparison <- function(o, ...) stop("Method undefined for an object of this class.")
 flattenDge <- function(o, ...) stop("Method undefined for an object of this class.")
-printComparison <- function(o) stop("Method undefined for an object of this class.")
+printComparison <- function(o, name=FALSE, model=FALSE, region=FALSE, treatment=FALSE, housing=FALSE, timepoint=FALSE) stop("Method undefined for an object of this class.")
 
 # now we set them as generic
 setGeneric("getModel", function(o) { standardGeneric("getModel") })
@@ -200,7 +200,7 @@ setGeneric("geneId", function(o) { standardGeneric("geneId") })
 setGeneric("geneId<-", function(o, value) { standardGeneric("geneId<-") })
 setGeneric("reverseComparison", function(o, ...) { standardGeneric("reverseComparison") })
 setGeneric("flattenDge", function(o, ...) { standardGeneric("flattenDge") })
-setGeneric("printComparison", function(o) { standardGeneric("printComparison") })
+setGeneric("printComparison", function(o, name=FALSE, model=FALSE, region=FALSE, treatment=FALSE, housing=FALSE, timepoint=FALSE) { standardGeneric("printComparison") })
 
 # first the show method to print it on screen
 #' Print an DGE Comparison
@@ -587,18 +587,45 @@ setMethod("flattenDge", signature = "dgeComparison", function(o, geneId = NULL) 
 #' Print the comparison, namely Group1 - Group2
 #'
 #' @param o An object of class \code{dgeComparison}
+#' @param name Logical, indicating if the name of the experiment should be printed. Default \code{FALSE}.
+#' @param region Logical, indicating if the brain region of the comparison should be printed. Default \code{FALSE}.
+#' @param treatment Logical, indicating if the treatment of the comparison should be printed. Default \code{FALSE}.
+#' @param housing Logical, indicating if the housing of the comparison should be printed. Default \code{FALSE}.
+#' @param timepoint Logical, indicating if the timepoint of the comparison should be printed. Default \code{FALSE}.
 #'
 #' @return String with the specified comparison
 #' @export
 #'
 #' @examples
 #' printComparison(dge)
-setMethod("printComparison", signature = "dgeComparison", function(o) {
+setMethod("printComparison", signature = "dgeComparison", function(o,
+                                                                   name = FALSE,
+                                                                   region = FALSE,
+                                                                   treatment = FALSE,
+                                                                   housing = FALSE,
+                                                                   timepoint = FALSE) {
+    addedVars <- c(name, region, treatment, housing, timepoint)
+    if (!is.logical(addedVars))
+        stop("In method 'printComparison', some non-logical variables were passed as arguments.")
+
     if (grepl("^-", o@comparisonID)) {
-        return(setNames(paste(o@group2, "-", o@group1), o@comparisonID))
+        outName <- paste(o@group2, "-", o@group1)
     } else {
-        return(setNames(paste(o@group1, "-", o@group2), o@comparisonID))
+        outName <- paste(o@group1, "-", o@group2)
     }
+
+    if (any(addedVars)) {
+
+        names(addedVars) <- c(o@name, o@region, o@treatment, o@housing, o@timepoint)
+        toAdd <- names(addedVars)[addedVars]
+
+        toAdd <- toAdd[toAdd != "None"]
+
+        if (length(toAdd > 0))
+            outName <- paste0(outName, " (", paste(toAdd, collapse = ", "), ")")
+    }
+
+    return(setNames(outName, o@comparisonID))
 })
 
 #' Returns the number of genes in the DE results

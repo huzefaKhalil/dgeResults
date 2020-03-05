@@ -4,10 +4,27 @@
 \alias{printComparison,dgeData-method}
 \title{Print the comparisons in this data object.}
 \usage{
-\S4method{printComparison}{dgeData}(o)
+\S4method{printComparison}{dgeData}(
+  o,
+  name = FALSE,
+  region = FALSE,
+  treatment = FALSE,
+  housing = FALSE,
+  timepoint = FALSE
+)
 }
 \arguments{
 \item{o}{An object of class \code{dgeData} for which to print the comparisons}
+
+\item{name}{Logical, indicating if the name of the experiment should be printed. Default \code{FALSE}.}
+
+\item{region}{Logical, indicating if the brain region of the comparison should be printed. Default \code{FALSE}.}
+
+\item{treatment}{Logical, indicating if the treatment of the comparison should be printed. Default \code{FALSE}.}
+
+\item{housing}{Logical, indicating if the housing of the comparison should be printed. Default \code{FALSE}.}
+
+\item{timepoint}{Logical, indicating if the timepoint of the comparison should be printed. Default \code{FALSE}.}
 }
 \value{
 A vector of strings with the comparisons. The vector is named by the ids of the comparisons

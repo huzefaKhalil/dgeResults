@@ -164,12 +164,33 @@ setMethod("getIds", signature = "dgeData", function(o) unlist(lapply(o@experimen
 #' Print the comparisons in this data object.
 #'
 #' @param o An object of class \code{dgeData} for which to print the comparisons
+#' @param name Logical, indicating if the name of the experiment should be printed. Default \code{FALSE}.
+#' @param region Logical, indicating if the brain region of the comparison should be printed. Default \code{FALSE}.
+#' @param treatment Logical, indicating if the treatment of the comparison should be printed. Default \code{FALSE}.
+#' @param housing Logical, indicating if the housing of the comparison should be printed. Default \code{FALSE}.
+#' @param timepoint Logical, indicating if the timepoint of the comparison should be printed. Default \code{FALSE}.
 #'
 #' @return A vector of strings with the comparisons. The vector is named by the ids of the comparisons
 #' @export
 #'
 #' @examples
-setMethod("printComparison", signature = "dgeData", function(o) unlist(lapply(o@experiments, printComparison)))
+setMethod("printComparison", signature = "dgeData", function(o,
+                                                             name = FALSE,
+                                                             region = FALSE,
+                                                             treatment = FALSE,
+                                                             housing = FALSE,
+                                                             timepoint = FALSE)
+    unlist(
+        lapply(
+            o@experiments,
+            printComparison,
+            name,
+            region,
+            treatment,
+            housing,
+            timepoint
+        )
+    ))
 
 #' Get the ensemble id's for a particular species in a DGE data set
 #'

@@ -332,12 +332,31 @@ setMethod("reverseComparison", signature = "dgeExperiment", function(o, comparis
 #' Print the comparisons in this experiment object.
 #'
 #' @param o An object of class \code{dgeExperiment} for which to print the comparisons
+#' @param name Logical, indicating if the name of the experiment should be printed. Default \code{FALSE}.
+#' @param region Logical, indicating if the brain region of the comparison should be printed. Default \code{FALSE}.
+#' @param treatment Logical, indicating if the treatment of the comparison should be printed. Default \code{FALSE}.
+#' @param housing Logical, indicating if the housing of the comparison should be printed. Default \code{FALSE}.
+#' @param timepoint Logical, indicating if the timepoint of the comparison should be printed. Default \code{FALSE}.
 #'
 #' @return A vector of strings with the comparisons
 #' @export
 #'
 #' @examples
-setMethod("printComparison", signature = "dgeExperiment", function(o) sapply(o@comparisons, printComparison))
+setMethod("printComparison", signature = "dgeExperiment", function(o,
+                                                                   name = FALSE,
+                                                                   region = FALSE,
+                                                                   treatment = FALSE,
+                                                                   housing = FALSE,
+                                                                   timepoint = FALSE)
+    sapply(
+        o@comparisons,
+        printComparison,
+        name,
+        region,
+        treatment,
+        housing,
+        timepoint
+    ))
 
 # Now define the generics which haven't been defined before
 getAllComparisons <- function(o) stop("Method undefined for an object of this class.")
