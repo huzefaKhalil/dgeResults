@@ -95,16 +95,6 @@ setMethod("getTreatment", signature = "dgeData", function (o) unique(unlist(sapp
 #'
 #' @param o An object of class \code{dgeData}
 #'
-#' @return A character vector of the housing in this data set.
-#' @export
-#'
-#' @examples
-setMethod("getHousing", signature = "dgeData", function (o) unique(unlist(sapply(o@experiments, getHousing))))
-
-#' Get the treatments present in this data set
-#'
-#' @param o An object of class \code{dgeData}
-#'
 #' @return A character vector of the timepoint in this data set.
 #' @export
 #'
@@ -167,7 +157,6 @@ setMethod("getIds", signature = "dgeData", function(o) unlist(lapply(o@experimen
 #' @param name Logical, indicating if the name of the experiment should be printed. Default \code{FALSE}.
 #' @param region Logical, indicating if the brain region of the comparison should be printed. Default \code{FALSE}.
 #' @param treatment Logical, indicating if the treatment of the comparison should be printed. Default \code{FALSE}.
-#' @param housing Logical, indicating if the housing of the comparison should be printed. Default \code{FALSE}.
 #' @param timepoint Logical, indicating if the timepoint of the comparison should be printed. Default \code{FALSE}.
 #'
 #' @return A vector of strings with the comparisons. The vector is named by the ids of the comparisons
@@ -178,17 +167,15 @@ setMethod("printComparison", signature = "dgeData", function(o,
                                                              name = FALSE,
                                                              region = FALSE,
                                                              treatment = FALSE,
-                                                             housing = FALSE,
                                                              timepoint = FALSE)
     unlist(
         lapply(
             o@experiments,
             printComparison,
-            name,
-            region,
-            treatment,
-            housing,
-            timepoint
+            name = name,
+            region = region,
+            treatment = treatment,
+            timepoint = timepoint
         )
     ))
 
@@ -531,13 +518,12 @@ setMethod("getComparisonById", signature = "dgeData", function(o, id) {
 #'
 #' @examples
 setMethod("getComparison", signature = "dgeData",
-          function(o, groups=NULL, treatment=NULL, housing=NULL, timepoint = NULL, region=NULL, sex=NULL, species = NULL, model=NULL, name=NULL)  {
+          function(o, groups=NULL, treatment=NULL, timepoint = NULL, region=NULL, sex=NULL, species = NULL, model=NULL, name=NULL)  {
               #TODO Add select by model and experiment name as well.
 
               # we either need both groups or treatment or region or sex)nd
               stopifnot((!is.null(groups) && length(groups) == 2) ||
                             !is.null(treatment) ||
-                            !is.null(housing) ||
                             !is.null(timepoint) ||
                             (!is.null(region) && region %in% .validRegions()) ||
                             (!is.null(sex) && tolower(sex) %in% .validSex()) ||
@@ -578,12 +564,11 @@ setMethod("getComparison", signature = "dgeData",
               # if groups, treatment, region and sex are unspecified,
               # we don't neet to go through the individual experiments
               if (!is.null(groups) || !is.null(treatment) || !is.null(region) ||
-                  !is.null(sex) || !is.null(housing) || !is.null(timepoint)) {
+                  !is.null(sex) || !is.null(timepoint)) {
                   # get a list of experiments back with the correct comparisons
                   ex <- lapply(ex, getComparison,
                                groups = groups,
                                treatment = treatment,
-                               housing = housing,
                                timepoint = timepoint,
                                region = region,
                                sex = sex)

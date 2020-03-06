@@ -8,7 +8,6 @@
   o,
   groups = NULL,
   treatment = NULL,
-  housing = NULL,
   timepoint = NULL,
   region = NULL,
   sex = NULL

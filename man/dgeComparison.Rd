@@ -9,7 +9,6 @@ dgeComparison(
   name,
   model,
   treatment = "None",
-  housing = "Standard",
   timepoint = "None",
   species,
   region,

@@ -18,7 +18,6 @@ NULL
 #' @slot species The species.
 #' @slot platform The platform.
 #' @slot treatments A character vector with the list of treatments for each comparison. If there aren't any then "None"
-#' @slot housing A character vector with the list of housing for each comparison.
 #' @slot timepoints A character vector with the timepoints for each comparison. If there aren't any, then "None"
 #' @slot regions A character vector which specifies the brain regions in this particular experiment
 #' @slot sexes The sex: male or female or both
@@ -40,7 +39,6 @@ setClass(
         platform = "character",
 
         treatments = "character",  # Vectors of all treatmenst, regions and sexes involved in the experiment
-        housing = "character",
         timepoints = "character",
         regions = "character",
         sexes = "character",
@@ -117,7 +115,6 @@ setMethod("show", signature = "dgeExperiment",
               cat("Species:", object@species, "\n")
               cat("Brain Regions:", object@regions, "\n")
               cat("Treatments:", object@treatments, "\n")
-              cat("Housing:", object@housing, "\n")
               cat("Timepoints:", object@timepoints, "\n")
               cat("Sex:", object@sexes, "\n")
               cat("Number of comparisons:", length(object@comparisons), "\n")
@@ -192,17 +189,6 @@ setMethod("getGroups", signature = "dgeExperiment", function(o) o@groups)
 #' @examples
 #' getTreatments(dgeExperiment)
 setMethod("getTreatment", signature = "dgeExperiment", function(o) o@treatments)
-
-#' Get the housing in the experiment
-#'
-#' @param o An object of class \code{dgeExperiment}
-#'
-#' @return A character vector of the housing.
-#' @export
-#'
-#' @examples
-#' getTreatments(dgeExperiment)
-setMethod("getHousing", signature = "dgeExperiment", function(o) o@housing)
 
 #' Get the timepoints in the experiment
 #'
@@ -335,7 +321,6 @@ setMethod("reverseComparison", signature = "dgeExperiment", function(o, comparis
 #' @param name Logical, indicating if the name of the experiment should be printed. Default \code{FALSE}.
 #' @param region Logical, indicating if the brain region of the comparison should be printed. Default \code{FALSE}.
 #' @param treatment Logical, indicating if the treatment of the comparison should be printed. Default \code{FALSE}.
-#' @param housing Logical, indicating if the housing of the comparison should be printed. Default \code{FALSE}.
 #' @param timepoint Logical, indicating if the timepoint of the comparison should be printed. Default \code{FALSE}.
 #'
 #' @return A vector of strings with the comparisons
@@ -346,16 +331,14 @@ setMethod("printComparison", signature = "dgeExperiment", function(o,
                                                                    name = FALSE,
                                                                    region = FALSE,
                                                                    treatment = FALSE,
-                                                                   housing = FALSE,
                                                                    timepoint = FALSE)
     sapply(
         o@comparisons,
         printComparison,
-        name,
-        region,
-        treatment,
-        housing,
-        timepoint
+        name = name,
+        region = region,
+        treatment = treatment,
+        timepoint = timepoint
     ))
 
 # Now define the generics which haven't been defined before
@@ -445,12 +428,11 @@ setMethod("getTotalN", signature = "dgeExperiment", function(o) o@totalN)
 #' #getComparison(fslExperiment, groups = c("FSL", "FRL"))
 #' #getComparison(fslExperiment, region = "HPC")
 setMethod("getComparison", signature = "dgeExperiment",
-          function(o, groups=NULL, treatment=NULL, housing= NULL, timepoint=NULL, region=NULL, sex=NULL) {
+          function(o, groups=NULL, treatment=NULL, timepoint=NULL, region=NULL, sex=NULL) {
 
               # we either need both groups or treatment or region or sex)nd
               stopifnot((!is.null(groups) && length(groups) == 2) ||
                             !is.null(treatment) ||
-                            !is.null(housing) ||
                             !is.null(timepont) ||
                             (!is.null(region) && region %in% .validRegions()) ||
                             (!is.null(sex) && tolower(sex) %in% .validSex())
@@ -479,15 +461,6 @@ setMethod("getComparison", signature = "dgeExperiment",
               # now treatment
               if (!is.null(treatment)) {
                   t <- sapply(sc, function(x) any(getTreatment(x) %in% treatment))
-                  if (!any(t))
-                      return(NULL)
-
-                  sc <- sc[t]
-              }
-
-              # now housing
-              if (!is.null(housing)) {
-                  t <- sapply(sc, function(x) any(getHousing(x) %in% housing))
                   if (!any(t))
                       return(NULL)
 
@@ -605,7 +578,6 @@ dgeExperiment <- function(comparisons, description = "") {
         species = s,
         platform = p,
         treatments = unique(sapply(comparisons, getTreatment)),
-        housing = unique(sapply(comparisons, getHousing)),
         timepoints = unique(sapply(comparisons, getTimepoint)),
         regions = unique(sapply(comparisons, getRegion)),
         sexes = unique(sapply(comparisons, getSex)),

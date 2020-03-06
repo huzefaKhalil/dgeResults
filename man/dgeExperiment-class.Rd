@@ -26,8 +26,6 @@ this class from a list of comparisons.
 
 \item{\code{treatments}}{A character vector with the list of treatments for each comparison. If there aren't any then "None"}
 
-\item{\code{housing}}{A character vector with the list of housing for each comparison.}
-
 \item{\code{timepoints}}{A character vector with the timepoints for each comparison. If there aren't any, then "None"}
 
 \item{\code{regions}}{A character vector which specifies the brain regions in this particular experiment}

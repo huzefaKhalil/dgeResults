@@ -16,10 +16,6 @@
     c("MicroArray", "RNASeq")
 }
 
-.validHousing <- function() {
-    c("Standard", "Enriched", "Both")
-}
-
 .revDT <- function(theData, comparisons) {
     colsToRev <- c("logFC", "t", "cohensD", "hedgesG")
 

@@ -37,8 +37,6 @@ means subsetting the DE results only; all the meta-data stays the same.
 
 \item{\code{treatment}}{If any treatments have been used in this particular comparison.}
 
-\item{\code{housing}}{If enriched or standard housing was used}
-
 \item{\code{timepoint}}{The timepoint for an experiment with various timepoints.}
 
 \item{\code{species}}{The species include mouse, rat, human}

@@ -32,7 +32,6 @@ NULL
 #' @slot name The internal name of the experiment that this comparison is from
 #' @slot model The model of the experiment. Possible values include: GRov, FSL, HR-LR, CSDS, Cort, Stress
 #' @slot treatment If any treatments have been used in this particular comparison.
-#' @slot housing If enriched or standard housing was used
 #' @slot timepoint The timepoint for an experiment with various timepoints.
 #' @slot species The species include mouse, rat, human
 #' @slot region The brain region. possible values include HPC, vHPC, dHPC, DG, vDG, dDG, PFC, NACC, STR
@@ -63,11 +62,9 @@ setClass(
         name = "character",
         # The names by which the experiment is known in the DGE database
         model = "character",
-        # One of GRov, HR-LR, FSL, CSDS, Cort
+        # GRov, HR-LR, FSL, CSDS, Cort, Env Enrichment, BDNF, etc.
         treatment = "character",
         # Any treatments... BDNF, WT, standard or enriched housing, drug treatments...
-        housing = "character",
-        # Housing, can be standard or enriched
         timepoint = "character",
         # timepoint, if any
         species = "character",
@@ -130,15 +127,6 @@ validDGEComparison <- function(object) {
               ))
     }
 
-    if (!any(grepl(object@housing, .validHousing()))) {
-        errors <-
-            c(errors,
-              paste(
-                  "The housing is invalid. Must be one of",
-                  paste(.validHousing(), collapse = ", ")
-              ))
-    }
-
     # the others shouldn't be null
     if (any(
         is.null(object@group1),
@@ -162,7 +150,6 @@ setValidity("dgeComparison", validDGEComparison)
 getModel <- function(o) stop("Method undefined for an object of this class.")
 getName <- function(o) stop("Method undefined for an object of this class.")
 getTreatment <- function(o) stop("Method undefined for an object of this class.")
-getHousing <- function(o) stop("Method undefined for an object of this class.")
 getTimepoint <- function(o) stop("Method undefined for an object of this class.")
 getSpecies <- function(o) stop("Method undefined for an object of this class.")
 getRegion <- function(o) stop("Method undefined for an object of this class.")
@@ -178,13 +165,12 @@ geneId <- function(o) stop("Method undefined for an object of this class.")
 `geneId<-` <- function(o, value) stop("Method undefined for an object of this class.")
 reverseComparison <- function(o, ...) stop("Method undefined for an object of this class.")
 flattenDge <- function(o, ...) stop("Method undefined for an object of this class.")
-printComparison <- function(o, name=FALSE, model=FALSE, region=FALSE, treatment=FALSE, housing=FALSE, timepoint=FALSE) stop("Method undefined for an object of this class.")
+printComparison <- function(o, name=FALSE, model=FALSE, region=FALSE, treatment=FALSE, timepoint=FALSE) stop("Method undefined for an object of this class.")
 
 # now we set them as generic
 setGeneric("getModel", function(o) { standardGeneric("getModel") })
 setGeneric("getName", function(o) { standardGeneric("getName") })
 setGeneric("getTreatment", function(o) { standardGeneric("getTreatment") })
-setGeneric("getHousing", function(o) {standardGeneric("getHousing") })
 setGeneric("getTimepoint", function(o) { standardGeneric("getTimepoint") })
 setGeneric("getSpecies", function(o) { standardGeneric("getSpecies") })
 setGeneric("getRegion", function(o) { standardGeneric("getRegion") })
@@ -200,7 +186,7 @@ setGeneric("geneId", function(o) { standardGeneric("geneId") })
 setGeneric("geneId<-", function(o, value) { standardGeneric("geneId<-") })
 setGeneric("reverseComparison", function(o, ...) { standardGeneric("reverseComparison") })
 setGeneric("flattenDge", function(o, ...) { standardGeneric("flattenDge") })
-setGeneric("printComparison", function(o, name=FALSE, model=FALSE, region=FALSE, treatment=FALSE, housing=FALSE, timepoint=FALSE) { standardGeneric("printComparison") })
+setGeneric("printComparison", function(o, name=FALSE, model=FALSE, region=FALSE, treatment=FALSE, timepoint=FALSE) { standardGeneric("printComparison") })
 
 # first the show method to print it on screen
 #' Print an DGE Comparison
@@ -218,7 +204,6 @@ setMethod("show", signature = "dgeComparison",
               cat("Species:", object@species, "\n")
               cat("Brain Region:", object@region, "\n")
               cat("Treatment:", object@treatment, "\n")
-              cat("Housing:", object@housing, "\n")
               cat("Timepoint:", object@timepoint, "\n")
               cat("Sex:", object@sex, "\n")
 
@@ -270,17 +255,6 @@ setMethod("getName", signature = "dgeComparison", function(o) o@name)
 #' @examples
 #' getTreatment(dge)
 setMethod("getTreatment", signature = "dgeComparison", function(o) o@treatment)
-
-#' Get the treatment for this comparison. If no treatment, "None" is returned.
-#'
-#' @param o An object of class \code{dgeComparison}
-#'
-#' @return Character with the housing name
-#' @export
-#'
-#' @examples
-#' getTreatment(dge)
-setMethod("getHousing", signature = "dgeComparison", function(o) o@housing)
 
 #' Get the timepoint for this comparison. If no timepoint, "None" is returned.
 #'
@@ -552,7 +526,6 @@ setMethod("flattenDge", signature = "dgeComparison", function(o, geneId = NULL) 
                           model = o@model,
                           platform = o@platform,
                           treatment = o@treatment,
-                          housing = o@housing,
                           timepoint = o@timepoint,
                           region = o@region,
                           sex = o@sex,
@@ -568,7 +541,6 @@ setMethod("flattenDge", signature = "dgeComparison", function(o, geneId = NULL) 
                           model = o@model,
                           platform = o@platform,
                           treatment = o@treatment,
-                          housing = o@housing,
                           timepoint = o@timepoint,
                           region = o@region,
                           sex = o@sex,
@@ -590,7 +562,6 @@ setMethod("flattenDge", signature = "dgeComparison", function(o, geneId = NULL) 
 #' @param name Logical, indicating if the name of the experiment should be printed. Default \code{FALSE}.
 #' @param region Logical, indicating if the brain region of the comparison should be printed. Default \code{FALSE}.
 #' @param treatment Logical, indicating if the treatment of the comparison should be printed. Default \code{FALSE}.
-#' @param housing Logical, indicating if the housing of the comparison should be printed. Default \code{FALSE}.
 #' @param timepoint Logical, indicating if the timepoint of the comparison should be printed. Default \code{FALSE}.
 #'
 #' @return String with the specified comparison
@@ -602,9 +573,8 @@ setMethod("printComparison", signature = "dgeComparison", function(o,
                                                                    name = FALSE,
                                                                    region = FALSE,
                                                                    treatment = FALSE,
-                                                                   housing = FALSE,
                                                                    timepoint = FALSE) {
-    addedVars <- c(name, region, treatment, housing, timepoint)
+    addedVars <- c(name, region, treatment, timepoint)
     if (!is.logical(addedVars))
         stop("In method 'printComparison', some non-logical variables were passed as arguments.")
 
@@ -616,12 +586,12 @@ setMethod("printComparison", signature = "dgeComparison", function(o,
 
     if (any(addedVars)) {
 
-        names(addedVars) <- c(o@name, o@region, o@treatment, o@housing, o@timepoint)
+        names(addedVars) <- c(o@name, o@region, o@treatment, o@timepoint)
         toAdd <- names(addedVars)[addedVars]
 
         toAdd <- toAdd[toAdd != "None"]
 
-        if (length(toAdd > 0))
+        if (length(toAdd) > 0)
             outName <- paste0(outName, " (", paste(toAdd, collapse = ", "), ")")
     }
 
@@ -716,7 +686,7 @@ setMethod("$", signature = "dgeComparison", function(x, name) {
 #' @export
 #'
 #' @examples
-dgeComparison <- function(deData, name, model, treatment = "None", housing = "Standard",
+dgeComparison <- function(deData, name, model, treatment = "None",
                           timepoint = "None", species, region, sex,
                           platform, groups, Ns) {
 
@@ -729,7 +699,6 @@ dgeComparison <- function(deData, name, model, treatment = "None", housing = "St
               typeof(sex) == "character",
               typeof(platform) == "character",
               typeof(treatment) == "character",
-              typeof(housing) == "character",
               typeof(timepoint) == "character",
               length(groups) == 2,
               typeof(groups) == "character",
@@ -783,7 +752,6 @@ dgeComparison <- function(deData, name, model, treatment = "None", housing = "St
         name = name,
         model = model,
         treatment = treatment,
-        housing = housing,
         timepoint = timepoint,
         species = tolower(species),
         region = region,

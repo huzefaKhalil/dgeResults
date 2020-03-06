@@ -9,7 +9,6 @@
   name = FALSE,
   region = FALSE,
   treatment = FALSE,
-  housing = FALSE,
   timepoint = FALSE
 )
 }
@@ -21,8 +20,6 @@
 \item{region}{Logical, indicating if the brain region of the comparison should be printed. Default \code{FALSE}.}
 
 \item{treatment}{Logical, indicating if the treatment of the comparison should be printed. Default \code{FALSE}.}
-
-\item{housing}{Logical, indicating if the housing of the comparison should be printed. Default \code{FALSE}.}
 
 \item{timepoint}{Logical, indicating if the timepoint of the comparison should be printed. Default \code{FALSE}.}
 }
