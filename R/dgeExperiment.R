@@ -61,22 +61,17 @@ validDGEExperiment <- function(object) {
     # Check to ensure that the name, model, species and platform matches that of all the comparisons
     hName <- sapply(object@comparisons, getName)
     if (!all(hName == object@name)) {
-        errors <- c(erros, "The comparisons have different names.")
-    }
-
-    hModel <- sapply(object@comparisons, getModel)
-    if (!all(hModel == object@model)) {
-        errors <- c(erros, "The comparisons have different models.")
+        errors <- c(errors, "The comparisons have different names.")
     }
 
     hSpecies <- sapply(object@comparisons, getSpecies)
     if (!all(hSpecies == object@species)) {
-        errors <- c(erros, "The comparisons have different species.")
+        errors <- c(errors, "The comparisons have different species.")
     }
 
     hPlatform <- sapply(object@comparisons, getPlatform)
     if (!all(hPlatform == object@platform)) {
-        errors <- c(erros, "The comparisons have different platforms.")
+        errors <- c(errors, "The comparisons have different platforms.")
     }
 
     totalN <- sum(sapply(object@comparisons, getNs))
@@ -434,7 +429,7 @@ setMethod("getComparison", signature = "dgeExperiment",
               # we either need both groups or treatment or region or sex)nd
               stopifnot((!is.null(groups) && length(groups) == 2) ||
                             !is.null(treatment) ||
-                            !is.null(timepont) ||
+                            !is.null(timepoint) ||
                             !is.null(model) ||
                             (!is.null(region) && region %in% .validRegions()) ||
                             (!is.null(sex) && tolower(sex) %in% .validSex())
@@ -551,9 +546,6 @@ dgeExperiment <- function(comparisons, description = "") {
     n <- unique(sapply(comparisons, getName))
     stopifnot(length(n) == 1)
 
-    m <- unique(sapply(comparisons, getModel))
-    stopifnot(length(m) == 1)
-
     s <- unique(sapply(comparisons, getSpecies))
     stopifnot(length(s) == 1)
 
@@ -586,7 +578,7 @@ dgeExperiment <- function(comparisons, description = "") {
     new("dgeExperiment",
         comparisons = comparisons,
         name = n,
-        model = m,
+        model = unique(sapply(comparisons, getModel)),
         species = s,
         platform = p,
         treatments = unique(sapply(comparisons, getTreatment)),
