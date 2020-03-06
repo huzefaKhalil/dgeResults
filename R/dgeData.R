@@ -518,7 +518,7 @@ setMethod("getComparisonById", signature = "dgeData", function(o, id) {
 #'
 #' @examples
 setMethod("getComparison", signature = "dgeData",
-          function(o, groups=NULL, treatment=NULL, timepoint = NULL, region=NULL, sex=NULL, species = NULL, model=NULL, name=NULL)  {
+          function(o, groups=NULL, model=NULL, treatment=NULL, timepoint=NULL, region=NULL, sex=NULL, species=NULL, name=NULL)  {
               #TODO Add select by model and experiment name as well.
 
               # we either need both groups or treatment or region or sex)nd
@@ -543,15 +543,6 @@ setMethod("getComparison", signature = "dgeData",
                   ex <- ex[t]
               }
 
-              if (!is.null(model)) {
-                  t <- sapply(ex, getModel)
-                  t <- t %in% model
-                  if (!any(t))
-                      return(NULL)
-
-                  ex <- ex[t]
-              }
-
               if (!is.null(name)) {
                   t <- sapply(ex, getName)
                   t <- t %in% name
@@ -564,10 +555,11 @@ setMethod("getComparison", signature = "dgeData",
               # if groups, treatment, region and sex are unspecified,
               # we don't neet to go through the individual experiments
               if (!is.null(groups) || !is.null(treatment) || !is.null(region) ||
-                  !is.null(sex) || !is.null(timepoint)) {
+                  !is.null(sex) || !is.null(timepoint) || !is.null(model)) {
                   # get a list of experiments back with the correct comparisons
                   ex <- lapply(ex, getComparison,
                                groups = groups,
+                               model = model,
                                treatment = treatment,
                                timepoint = timepoint,
                                region = region,

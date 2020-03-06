@@ -7,6 +7,7 @@
 \S4method{getComparison}{dgeExperiment}(
   o,
   groups = NULL,
+  model = NULL,
   treatment = NULL,
   timepoint = NULL,
   region = NULL,
@@ -17,6 +18,8 @@
 \item{o}{An object of class \code{dgeExperiment} from which the comparison is to be extracted}
 
 \item{groups}{The groups for which the comparison is needed. If specified, the other two parameters are ignored}
+
+\item{model}{Select only specified models.}
 
 \item{treatment}{Optional parameter specifying the treatments needed for the comparison. Can be used in conjunction with others}
 

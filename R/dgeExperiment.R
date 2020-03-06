@@ -343,13 +343,13 @@ setMethod("printComparison", signature = "dgeExperiment", function(o,
 
 # Now define the generics which haven't been defined before
 getAllComparisons <- function(o) stop("Method undefined for an object of this class.")
-getComparison <- function(o, ...) stop("Method undefined for an object of this class.")
+getComparison <- function(o, groups=NULL, model=NULL, treatment=NULL, timepoint=NULL, region=NULL, sex=NULL, ...) stop("Method undefined for an object of this class.")
 getComparisonById <- function(o, id) stop("Method undefined for an object of this class.")
 getTotalN <- function(o) stop("Method undefined for an object of this class.")
 getIds <- function(o) stop("Method undefined for an object of this class.")
 
 setGeneric("getAllComparisons", function(o) { standardGeneric("getAllComparisons") })
-setGeneric("getComparison", function(o, ...) { standardGeneric("getComparison") })
+setGeneric("getComparison", function(o, groups=NULL, model=NULL, treatment=NULL, timepoint=NULL, region=NULL, sex=NULL, ...) { standardGeneric("getComparison") })
 setGeneric("getComparisonById", function(o, id) { standardGeneric("getComparisonById") })
 setGeneric("getTotalN", function(o) { standardGeneric("getTotalN") })
 setGeneric("getIds", function(o) { standardGeneric("getIds") })
@@ -416,6 +416,7 @@ setMethod("getTotalN", signature = "dgeExperiment", function(o) o@totalN)
 #'
 #' @param o An object of class \code{dgeExperiment} from which the comparison is to be extracted
 #' @param groups The groups for which the comparison is needed. If specified, the other two parameters are ignored
+#' @param model Select only specified models.
 #' @param treatment Optional parameter specifying the treatments needed for the comparison. Can be used in conjunction with others
 #' @param timepoint Optional parameter specifying the timepoints needed for the comparison. Can be used in conjunction with others
 #' @param region The brain region of the desired comparison. Can be specified in conjunction with treatment
@@ -428,12 +429,13 @@ setMethod("getTotalN", signature = "dgeExperiment", function(o) o@totalN)
 #' #getComparison(fslExperiment, groups = c("FSL", "FRL"))
 #' #getComparison(fslExperiment, region = "HPC")
 setMethod("getComparison", signature = "dgeExperiment",
-          function(o, groups=NULL, treatment=NULL, timepoint=NULL, region=NULL, sex=NULL) {
+          function(o, groups=NULL, model=NULL, treatment=NULL, timepoint=NULL, region=NULL, sex=NULL) {
 
               # we either need both groups or treatment or region or sex)nd
               stopifnot((!is.null(groups) && length(groups) == 2) ||
                             !is.null(treatment) ||
                             !is.null(timepont) ||
+                            !is.null(model) ||
                             (!is.null(region) && region %in% .validRegions()) ||
                             (!is.null(sex) && tolower(sex) %in% .validSex())
               )
@@ -475,6 +477,16 @@ setMethod("getComparison", signature = "dgeExperiment",
 
                   sc <- sc[t]
               }
+
+              # now model
+              if (!is.null(model)) {
+                  t <- sapply(sc, function(x) any(getModel(x) %in% model))
+                  if (!any(t))
+                      return(NULL)
+
+                  sc <- sc[t]
+              }
+
 
               # now look for the groups
               if (!is.null(groups)) {

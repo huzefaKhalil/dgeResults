@@ -7,12 +7,12 @@
 \S4method{getComparison}{dgeData}(
   o,
   groups = NULL,
+  model = NULL,
   treatment = NULL,
   timepoint = NULL,
   region = NULL,
   sex = NULL,
   species = NULL,
-  model = NULL,
   name = NULL
 )
 }
@@ -21,6 +21,8 @@
 
 \item{groups}{The groups for which the comparison is needed. If specified, the other two parameters are ignored}
 
+\item{model}{Select only specified models}
+
 \item{treatment}{Optional parameter specifying the treatment needed for the comparison. Can be used in conjunction with region}
 
 \item{region}{The brain region of the desired comparison. Can be specified in conjunction with treatment}
@@ -28,8 +30,6 @@
 \item{sex}{The sex of the desired comparison}
 
 \item{species}{The desired species}
-
-\item{model}{Select only specified models}
 
 \item{name}{Select only experiments with specified name}
 }
