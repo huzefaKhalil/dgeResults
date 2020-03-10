@@ -165,7 +165,7 @@ geneId <- function(o) stop("Method undefined for an object of this class.")
 `geneId<-` <- function(o, value) stop("Method undefined for an object of this class.")
 reverseComparison <- function(o, ...) stop("Method undefined for an object of this class.")
 flattenDge <- function(o, ...) stop("Method undefined for an object of this class.")
-printComparison <- function(o, name=FALSE, model=FALSE, region=FALSE, treatment=FALSE, timepoint=FALSE) stop("Method undefined for an object of this class.")
+printComparison <- function(o, name=FALSE, region=FALSE, treatment=FALSE, timepoint=FALSE) stop("Method undefined for an object of this class.")
 
 # now we set them as generic
 setGeneric("getModel", function(o) { standardGeneric("getModel") })
@@ -186,7 +186,7 @@ setGeneric("geneId", function(o) { standardGeneric("geneId") })
 setGeneric("geneId<-", function(o, value) { standardGeneric("geneId<-") })
 setGeneric("reverseComparison", function(o, ...) { standardGeneric("reverseComparison") })
 setGeneric("flattenDge", function(o, ...) { standardGeneric("flattenDge") })
-setGeneric("printComparison", function(o, name=FALSE, model=FALSE, region=FALSE, treatment=FALSE, timepoint=FALSE) { standardGeneric("printComparison") })
+setGeneric("printComparison", function(o, name=FALSE, region=FALSE, treatment=FALSE, timepoint=FALSE) { standardGeneric("printComparison") })
 
 # first the show method to print it on screen
 #' Print an DGE Comparison
@@ -589,7 +589,8 @@ setMethod("printComparison", signature = "dgeComparison", function(o,
         names(addedVars) <- c(o@name, o@region, o@treatment, o@timepoint)
         toAdd <- names(addedVars)[addedVars]
 
-        toAdd <- toAdd[toAdd != "None"]
+        # None should also be printed...
+        #toAdd <- toAdd[toAdd != "None"]
 
         if (length(toAdd) > 0)
             outName <- paste0(outName, " (", paste(toAdd, collapse = ", "), ")")
