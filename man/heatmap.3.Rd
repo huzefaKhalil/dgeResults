@@ -4,7 +4,7 @@
 \alias{heatmap.3}
 \title{Plots an interactive heatmap suitable for webpages}
 \usage{
-heatmap.3(hData, estimate = "hedgesG", ids = NULL)
+heatmap.3(hData, estimate = "hedgesG", ids = NULL, Rowv = TRUE, Colv = TRUE)
 }
 \arguments{
 \item{hData}{The \code{data.table} from which to plot the heatmap.
@@ -15,6 +15,10 @@ All the data points in this object will be plotted, so any subsetting must happe
 
 \item{ids}{The ids which will be printed. Can be a character vector or data.table
 with the ids as well as the compound symbol}
+
+\item{Rowv}{Should the rows be reordered? Defualt is \code{TRUE}.}
+
+\item{Colv}{Should the columns be reordered? Defualt is \code{TRUE}.}
 }
 \value{
 An object of class heatmapr

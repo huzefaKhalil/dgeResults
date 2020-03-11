@@ -108,12 +108,14 @@ smoothForest <- function(hData,
 #'                 \code{cohensD} or \code{logFC}.
 #' @param ids The ids which will be printed. Can be a character vector or data.table
 #'            with the ids as well as the compound symbol
+#' @param Rowv Should the rows be reordered? Defualt is \code{TRUE}.
+#' @param Colv Should the columns be reordered? Defualt is \code{TRUE}.
 #'
 #' @return An object of class heatmapr
 #' @export
 #'
 #' @examples
-heatmap.3 <- function(hData, estimate = "hedgesG", ids = NULL) {
+heatmap.3 <- function(hData, estimate = "hedgesG", ids = NULL, Rowv = TRUE, Colv = TRUE) {
 
     if (!is.data.table(hData))
         stop("Input to the 'heatmap.3' method must be an 'data.table' object.")
