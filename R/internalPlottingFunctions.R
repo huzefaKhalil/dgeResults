@@ -9,10 +9,10 @@
 
     # remove rows with a lot of NA values... Arbitrarily choosing 70% as the cut-off
     # so, the gene must be present in 70% of the comparisons to be plotted
-    nNA <- rowSums(is.na(pMat[, -1]))
-    nNA <- (nNA / (ncol(pMat) - 1)) < 0.3
-
-    pMat <- pMat[nNA, ]
+    # nNA <- rowSums(is.na(pMat[, -1]))
+    # nNA <- (nNA / (ncol(pMat) - 1)) < 0.3
+    #
+    # pMat <- pMat[nNA, ]
 
     genes <- pMat$id
     pMat <- as.matrix(pMat[, -1])
@@ -46,8 +46,17 @@
 
     #colnames(pMat) <- cNames$name
 
-    heatmaply::heatmapr(pMat,
-                        custom_hovertext = hoverTextMat)
+    tryCatch(
+        heatmaply::heatmapr(pMat,
+                            custom_hovertext = hoverTextMat),
+        error = function(e) {
+            heatmaply::heatmapr(pMat,
+                                custom_hovertext = hoverTextMat,
+                                Rowv = FALSE,
+                                Colv = FALSE,
+                                show_dendrogram = FALSE)
+        }
+    )
 }
 
 
