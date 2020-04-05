@@ -342,12 +342,14 @@ getComparison <- function(o, groups=NULL, model=NULL, treatment=NULL, timepoint=
 getComparisonById <- function(o, id) stop("Method undefined for an object of this class.")
 getTotalN <- function(o) stop("Method undefined for an object of this class.")
 getIds <- function(o) stop("Method undefined for an object of this class.")
+removeComparison <- function(o, id) stop("Method undefined for an object of this class.")
 
 setGeneric("getAllComparisons", function(o) { standardGeneric("getAllComparisons") })
 setGeneric("getComparison", function(o, groups=NULL, model=NULL, treatment=NULL, timepoint=NULL, region=NULL, sex=NULL, ...) { standardGeneric("getComparison") })
 setGeneric("getComparisonById", function(o, id) { standardGeneric("getComparisonById") })
 setGeneric("getTotalN", function(o) { standardGeneric("getTotalN") })
 setGeneric("getIds", function(o) { standardGeneric("getIds") })
+setGeneric("removeComparison", function(o, id) { standardGeneric("removeComparison") })
 
 #' Get all the internal comparison IDs in this experiment
 #'
@@ -370,6 +372,28 @@ setMethod("getIds", signature = "dgeExperiment", function(o) sapply(o@comparison
 #' @examples
 setMethod("getComparisonById", signature = "dgeExperiment", function(o, id) {
     sc <- lapply(o@comparisons, function(x) if (x@comparisonID %in% id) return(x) else return(NULL))
+
+    sc <- sc[lengths(sc) != 0]
+
+    o@comparisons <- sc
+
+    if (length(sc) == 0)
+        return(NULL)
+    else
+        return(o)
+})
+
+#' Remove comparisons from an experiment
+#'
+#' @param o The expermient from which to remove the comparisons
+#' @param id A character vector of the ids of the comparison to remove.
+#'
+#' @return The experiment with the comparison removed
+#' @export
+#'
+#' @examples
+setMethod("removeComparison", signature = "dgeExperiment", function(o, id) {
+    sc <- lapply(o@comparisons, function(x) if (x@comparisonID %in% id) return(NULL) else return(x))
 
     sc <- sc[lengths(sc) != 0]
 

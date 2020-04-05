@@ -498,6 +498,28 @@ setMethod("getComparisonById", signature = "dgeData", function(o, id) {
         return(o)
 })
 
+#' Removes the comparisons which match the given id's
+#'
+#' @param o The \code{dgeData} object from which to remove the id's
+#' @param id A character vector of the ids to remove
+#'
+#' @return An object of class \code{dgeData} with the id's removed
+#' @export
+#'
+#' @examples
+setMethod("removeComparison", signature = "dgeData", function(o, id) {
+    exp <- lapply(o@experiments, removeComparison, id)
+
+    exp <- exp[lengths(exp) != 0]
+
+    o@experiments <- exp
+
+    if (length(exp) == 0)
+        return(NULL)
+    else
+        return(o)
+})
+
 #' Get one or many comparisons from a `dgeData` object.
 #'
 #' The comparisons matching the given parameters are returned from the given data set. If groups are specified, they need to be a
