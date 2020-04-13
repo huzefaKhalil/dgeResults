@@ -11,12 +11,14 @@ smoothForest(
   includeRegion = FALSE,
   includeEstimate = FALSE,
   includeTreatment = FALSE,
+  includeTimepoint = FALSE,
   includeSex = FALSE,
   includePval = FALSE,
   comparisonNames = NULL,
   orderBy = "estimate",
   estimate = "hedgesG",
-  ids = NULL
+  splitBy = "gene",
+  ids
 )
 }
 \arguments{
@@ -36,17 +38,21 @@ The function expects the columns to be the same as those returned by the
 
 \item{includeTreatment}{logical. Includes the treatment if \code{TRUE}.}
 
+\item{includeTimepoint}{logical. Includes the ttimepoint if \code{TRUE}.}
+
 \item{includeSex}{logical. Includes the sex if \code{TRUE}.}
 
 \item{includePval}{logical. Includes the pvalue if \code{TRUE}.}
 
-\item{comparisonNames}{A character vecotr. If specified, the graph will show these as the comparison names.}
+\item{comparisonNames}{A character vector. If specified, the graph will show these as the comparison names.}
 
 \item{orderBy}{One of \code{asis}, \code{estimate}, \code{experiment}, \code{pval}.}
 
 \item{estimate}{Which estimate should be plotted. Options are \code{hedgesG} (the default), \code{cohensD}, \code{logFC}.}
 
-\item{ids}{An optional title with the gene symbol}
+\item{splitBy}{Generate plots either by "gene" or by "comparison".}
+
+\item{ids}{The data.table of mappings between ids and symbols for genes}
 }
 \value{
 A list of ggplot2 objects which can be plotted.

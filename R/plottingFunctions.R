@@ -20,12 +20,14 @@ NULL
 #' @param includeRegion logical. Includes the brain region if \code{TRUE}.
 #' @param includeEstimate logical. Includes the estimate if \code{TRUE}.
 #' @param includeTreatment logical. Includes the treatment if \code{TRUE}.
+#' @param includeTimepoint logical. Includes the ttimepoint if \code{TRUE}.
 #' @param includeSex logical. Includes the sex if \code{TRUE}.
 #' @param includePval logical. Includes the pvalue if \code{TRUE}.
-#' @param comparisonNames A character vecotr. If specified, the graph will show these as the comparison names.
+#' @param comparisonNames A character vector. If specified, the graph will show these as the comparison names.
 #' @param orderBy One of \code{asis}, \code{estimate}, \code{experiment}, \code{pval}.
 #' @param estimate Which estimate should be plotted. Options are \code{hedgesG} (the default), \code{cohensD}, \code{logFC}.
-#' @param ids An optional title with the gene symbol
+#' @param splitBy Generate plots either by "gene" or by "comparison".
+#' @param ids The data.table of mappings between ids and symbols for genes
 #'
 #' @return A list of ggplot2 objects which can be plotted.
 #' @export
@@ -37,12 +39,14 @@ smoothForest <- function(hData,
                          includeRegion = FALSE,
                          includeEstimate = FALSE,
                          includeTreatment = FALSE,
+                         includeTimepoint = FALSE,
                          includeSex = FALSE,
                          includePval = FALSE,
                          comparisonNames = NULL,
                          orderBy = "estimate",
                          estimate = "hedgesG",
-                         ids = NULL) {
+                         splitBy = "gene",
+                         ids) {
 
     # function to draw the smooth forest plot.
     # The logic is as follows:
@@ -57,10 +61,17 @@ smoothForest <- function(hData,
     if (!is.data.table(hData))
         stop("Input to the 'smoothForest' method must be a 'data.table'.")
 
-    # step 2: split by unique genes
+    if (!(splitBy %in% c("gene", "comparison")))
+        splitBy <- "gene"
+
+
     hData$compound.symbol <- ids[hData]$compound.symbol
 
-    hData <- split(hData, by = "compound.symbol")
+    # step 2: split by unique genes or comparison
+    if (splitBy == "gene")
+        hData <- split(hData, by = "compound.symbol")
+    else
+        hData <- split(hData, by = "comparisonID")
 
     # next, loop over each genes
     outPlots <- Map(function(x, nx) {
@@ -74,25 +85,31 @@ smoothForest <- function(hData,
                                  includeRegion = includeRegion,
                                  includeEstimate = includeEstimate,
                                  includeTreatment = includeTreatment,
+                                 includeTimepoint = includeTimepoint,
                                  includeSex = includeSex,
                                  includePval = includePval,
                                  estimate = estimate,
-                                 comparisonNames = comparisonNames)
+                                 comparisonNames = comparisonNames,
+                                 splitBy = splitBy)
 
         metaPlot <- .plotMetaData(metaData)
         forestPlot <- .plotForest(x, estimate)
 
-        if (is.null(ids)) {
-            geneSymbol <- NULL
+        if (splitBy == "gene") {
+            title <- ids[id %in% x$id[1]]$compound.symbol
+            fSize <- 15
+            layout <- matrix(c(1, 1, 1, 1, 1, 2, 2, 2), nrow=1)
         } else {
-            geneSymbol <- ids[id %in% x$id[1]]$compound.symbol
+            title <- paste(x$comparison[1], x$name[1], x$region[1], sep = ", ")
+            fSize <- 10
+            layout <- matrix(c(1, 2), nrow=1)
         }
 
         # layout <- matrix(c(rep(1, times = 1 + ncol(metaData)), 2, 2, 2, 2, 2), nrow = 1)
         # as_ggplot(gridExtra::arrangeGrob(metaPlot, forestPlot, layout_matrix = layout))
-        ggpubr::as_ggplot(gridExtra::arrangeGrob(metaPlot, forestPlot, nrow=1,
-                                                 top = grid::textGrob(label = geneSymbol,
-                                                                      gp = grid::gpar(fontsize=17, fontface=2)),
+        ggpubr::as_ggplot(gridExtra::arrangeGrob(metaPlot, forestPlot, layout_matrix = layout,
+                                                 top = grid::textGrob(label = title,
+                                                                      gp = grid::gpar(fontsize=fSize, fontface=2)),
                                                  padding = unit(1, "line")))
     }, hData, names(hData))
 

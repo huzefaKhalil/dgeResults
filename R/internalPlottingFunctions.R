@@ -109,7 +109,7 @@
                        colour = I(gray(0)), lwd = I(7/12), height = 0) +
         scale_y_continuous(name = "", breaks = c(1:nr), labels = NULL) +
         geom_point(aes(x = estimate, y = id), colour = I(gray(0))) + theme_bw() +
-        coord_cartesian(xlim = xLim, ylim = yLim) +
+        coord_cartesian(xlim = xLim, ylim = yLim, expand = F) +
         theme(panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
               legend.position = "none",
@@ -133,7 +133,8 @@
     # The coulmns should all be characters!
 
     # get the size of each column
-    colArea <- cumsum(c(1, apply(md, 2, function(y) max(round(max(nchar(y))/200, 2), 0.05))))
+    tmd <- rbind(matrix(colnames(md), nrow = 1), md, use.names = FALSE)
+    colArea <- cumsum(c(1, apply(tmd, 2, function(y) max(round(max(nchar(y))/100, 2), 0.03))))
     names(colArea) <- NULL
 
     xVals <- colArea[1:ncol(md)]
@@ -150,13 +151,14 @@
                           x = xVals,
                           value = names(md))
 
+    text_size <- 3
     ggplot(df, aes(x = x, y = y)) +
-        geom_text(aes(label = value), size = 4, hjust = 0, vjust = 0.5)  +
-        geom_text(data = dfTitle, aes(x = x, y = y, label = value), size = 4, hjust = 0, vjust = -0.5) +
-        coord_cartesian(xlim = xLim, ylim = yLim, expand = T) +
+        geom_text(aes(label = value), size = text_size, hjust = 0, vjust = 0.5)  +
+        geom_text(data = dfTitle, aes(x = x, y = y, label = value), size = text_size, hjust = 0, vjust = -0.5) +
+        coord_cartesian(xlim = xLim, ylim = yLim, expand = F) +
         geom_hline(yintercept = nrow(md) + 0.5) +
         theme_bw() +
-        theme(text = element_text(size = 1/0.352777778*3),
+        theme(text = element_text(size = 1/0.352777778*text_size),
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
               legend.position = "none",
@@ -174,37 +176,49 @@
 
 .getMetaData <- function(x, includeModel, includeName,
                          includeRegion, includeEstimate,
-                         includeTreatment, includeSex,
+                         includeTreatment, includeTimepoint,
+                         includeSex,
                          includePval, estimate,
-                         comparisonNames = NULL) {
+                         splitBy, comparisonNames = NULL) {
 
     # keep only the rows for which we have a logFC
     x <- x[!is.na(x$logFC), ]
 
-    outDF <- data.table(Comparison = x$comparison)
+    if (splitBy == "gene") {
 
-    if (!is.null(comparisonNames)) {
-        # check if it has the same length as the data
-        if (length(comparisonNames) != nrow(x))
-            stop("In internal plotting function, the comparison names are not equal to the number of rows of data.table")
+        outDF <- data.table("Comparison" = x$comparison)
 
-        outDF$Comparison <- comparisonNames
+        if (!is.null(comparisonNames)) {
+            # check if it has the same length as the data
+            if (length(comparisonNames) != nrow(x))
+                stop("In internal plotting function, the comparison names are not equal to the number of rows of data.table")
+
+            outDF$Comparison <- comparisonNames
+        }
+
+        if (isTRUE(includeModel))
+            outDF <- data.table(outDF, "Model" = x$model)
+
+        if (isTRUE(includeName))
+            outDF <- data.table(outDF, "Name" = x$name)
+
+        if (isTRUE(includeRegion))
+            outDF <- data.table(outDF, "Region" = x$region)
+
+        if (isTRUE(includeTreatment))
+            outDF <- data.table(outDF, "Treatment" = x$treatment)
+
+        if (isTRUE(includeTimepoint))
+            outDF <- data.table(outDF, "Timepoint" = x$timepoint)
+
+        if (isTRUE(includeSex))
+            outDF <- data.table(outDF, "Sex" = x$sex)
+
+    } else {
+        # just show the gene name
+        outDF <- data.table("Gene Symbol" = x$compound.symbol)
     }
 
-    if (isTRUE(includeModel))
-        outDF <- data.table(outDF, Model = x$model)
-
-    if (isTRUE(includeName))
-        outDF <- data.table(outDF, Name = x$name)
-
-    if (isTRUE(includeRegion))
-        outDF <- data.table(outDF, "Region" = x$region)
-
-    if (isTRUE(includeTreatment))
-        outDF <- data.table(outDF, Treatment = x$treatment)
-
-    if (isTRUE(includeSex))
-        outDF <- data.table(outDF, Sex = x$sex)
 
     if (isTRUE(includeEstimate))
         outDF <- data.table(outDF,
