@@ -236,6 +236,11 @@
         # just show the gene name, logFC, p-value and fdr
         outDF <- data.table("Gene Symbol" = x$compound.symbol)
         outDF <- data.table(outDF, "LogFC" = format(x$logFC, digits = 2))
+
+        # make them zero if very low
+        outDF$pvalue <- ifelse(outDF$pvalue <= 0.0001, 0, outDF$pvalue)
+        outDF$fdr <- ifelse(outDF$fdr <= 0.0001, 0, outDF$pvalue)
+
         outDF <- data.table(outDF, "P-value" = format(x$pvalue, digits = 3,
                                                       scientific = FALSE))
         outDF <- data.table(outDF, "FDR" = format(x$fdr, digits = 3,
