@@ -64,7 +64,6 @@ smoothForest <- function(hData,
     if (!(splitBy %in% c("gene", "comparison")))
         splitBy <- "gene"
 
-
     hData$compound.symbol <- ids[hData]$compound.symbol
 
     # step 2: split by unique genes or comparison

@@ -141,11 +141,17 @@
     xLim <- range(colArea)
     yLim <- c(-1, nrow(md) + 1.5)
 
+    # if FDR is present, color red
+    if ("FDR" %in% colnames(md)) {
+        clr <- as.numeric(md$FDR) < 0.05
+    }
+
     # create the data to plot
     df <- data.frame(y = rep(1:nrow(md), ncol(md)),  # Get the number of rows as facotrs to plot separately
                      x = rep(xVals, each=nrow(md)),
                      value = unlist(lapply(md, as.vector), use.names = FALSE),  # the text to print
                      stringsAsFactors = FALSE)
+    df$clr <- rep(clr, ncol(md))
 
     dfTitle <- data.frame(y = rep(nrow(md) + 1, ncol(md)),
                           x = xVals,
@@ -153,7 +159,8 @@
 
     text_size <- 3
     ggplot(df, aes(x = x, y = y)) +
-        geom_text(aes(label = value), size = text_size, hjust = 0, vjust = 0.5)  +
+        geom_text(aes(label = value, color = clr), size = text_size, hjust = 0, vjust = 0.5)  +
+        scale_color_manual(values = c("black", "red")) +
         geom_text(data = dfTitle, aes(x = x, y = y, label = value), size = text_size, hjust = 0, vjust = -0.5) +
         coord_cartesian(xlim = xLim, ylim = yLim, expand = F) +
         geom_hline(yintercept = nrow(md) + 0.5) +
@@ -214,23 +221,26 @@
         if (isTRUE(includeSex))
             outDF <- data.table(outDF, "Sex" = x$sex)
 
+        if (isTRUE(includeEstimate))
+            outDF <- data.table(outDF,
+                                "Estimate" = format(switch(estimate,
+                                                           hedgesG = x$hedgesG,
+                                                           cohensD = x$cohensD,
+                                                           logFC = x$logFC,
+                                                           x$hedgesG), digits = 2))
+
+        if (isTRUE(includePval))
+            outDF <- data.table(outDF, "P-value" = format(x$pvalue, digits = 3))
+
     } else {
-        # just show the gene name
+        # just show the gene name, logFC, p-value and fdr
         outDF <- data.table("Gene Symbol" = x$compound.symbol)
+        outDF <- data.table(outDF, "LogFC" = format(x$logFC, digits = 2))
+        outDF <- data.table(outDF, "P-value" = format(x$pvalue, digits = 3,
+                                                      scientific = FALSE))
+        outDF <- data.table(outDF, "FDR" = format(x$fdr, digits = 3,
+                                                  scientific = FALSE))
     }
-
-
-    if (isTRUE(includeEstimate))
-        outDF <- data.table(outDF,
-                            "Estimate" = format(switch(estimate,
-                                                       hedgesG = x$hedgesG,
-                                                       cohensD = x$cohensD,
-                                                       logFC = x$logFC,
-                                                       x$hedgesG), digits = 2))
-
-    if (isTRUE(includePval))
-        outDF <- data.table(outDF, "P-value" = format(x$pvalue, digits = 3))
-
     return(outDF)
 }
 
