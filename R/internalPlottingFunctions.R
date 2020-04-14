@@ -181,12 +181,12 @@
 }
 
 
-.getMetaData <- function(x, includeModel, includeName,
-                         includeRegion, includeEstimate,
-                         includeTreatment, includeTimepoint,
-                         includeSex,
-                         includePval, estimate,
-                         splitBy, comparisonNames = NULL) {
+.getMetaData <- function(x, includeModel=F, includeName=F,
+                         includeRegion=F, includeEstimate=F,
+                         includeTreatment=F, includeTimepoint=F,
+                         includeSex=F,
+                         includePval=F, estimate="hedgesG",
+                         splitBy="gene", comparisonNames = NULL) {
 
     # keep only the rows for which we have a logFC
     x <- x[!is.na(x$logFC), ]
@@ -238,8 +238,8 @@
         outDF <- data.table(outDF, "LogFC" = format(x$logFC, digits = 2))
 
         # make them zero if very low
-        outDF$pvalue <- ifelse(outDF$pvalue <= 0.0001, 0, outDF$pvalue)
-        outDF$fdr <- ifelse(outDF$fdr <= 0.0001, 0, outDF$pvalue)
+        x$pvalue <- ifelse(x$pvalue <= 0.0001, 0, x$pvalue)
+        x$fdr <- ifelse(x$fdr <= 0.0001, 0, x$fdr)
 
         outDF <- data.table(outDF, "P-value" = format(x$pvalue, digits = 3,
                                                       scientific = FALSE))
