@@ -371,7 +371,15 @@ setMethod("getIds", signature = "dgeExperiment", function(o) sapply(o@comparison
 #'
 #' @examples
 setMethod("getComparisonById", signature = "dgeExperiment", function(o, id) {
-    sc <- lapply(o@comparisons, function(x) if (x@comparisonID %in% id) return(x) else return(NULL))
+    sc <- lapply(o@comparisons, function(x) {
+        if (x@comparisonID %in% id) {
+            return(x)
+        } else if (reverseComparison(x)@comparisonID %in% id) {
+            return(reverseComparison(x))
+        } else {
+            return(NULL)
+        }
+    })
 
     sc <- sc[lengths(sc) != 0]
 
