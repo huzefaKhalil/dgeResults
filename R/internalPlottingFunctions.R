@@ -144,6 +144,8 @@
     # if FDR is present, color red
     if ("FDR" %in% colnames(md)) {
         clr <- as.numeric(md$FDR) < 0.05
+    } else {
+        clr <- rep(FALSE, nrow(md))
     }
 
     # create the data to plot
