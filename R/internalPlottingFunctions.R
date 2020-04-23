@@ -124,7 +124,7 @@
         labs(x = "", y = "")
 }
 
-.plotMetaData <- function(md) {
+.plotMetaData <- function(md, fontSize) {
 
     # this function plots the text summary and returns it as a ggplot2 plot object..
     # kudos to metaviz.. I'm gonna borrow much of their code here.
@@ -136,6 +136,8 @@
     tmd <- rbind(matrix(colnames(md), nrow = 1), md, use.names = FALSE)
     colArea <- cumsum(c(1, apply(tmd, 2, function(y) max(round(max(nchar(y))/100, 2), 0.03))))
     names(colArea) <- NULL
+    # Add a little to columns after the first
+    colArea <- c(colArea[1:2], colArea[-c(1,2)] + cumsum(rep(0.02, length(colArea) - 2)))
 
     xVals <- colArea[1:ncol(md)]
     xLim <- range(colArea)
@@ -159,7 +161,7 @@
                           x = xVals,
                           value = names(md))
 
-    text_size <- 3
+    text_size <- fontSize
     ggplot(df, aes(x = x, y = y)) +
         geom_text(aes(label = value, color = clr), size = text_size, hjust = 0, vjust = 0.5)  +
         scale_color_manual(values = c("black", "red")) +

@@ -27,6 +27,7 @@ NULL
 #' @param orderBy One of \code{asis}, \code{estimate}, \code{experiment}, \code{pval}.
 #' @param estimate Which estimate should be plotted. Options are \code{hedgesG} (the default), \code{cohensD}, \code{logFC}.
 #' @param splitBy Generate plots either by "gene" or by "comparison".
+#' @param fontSize The font size when printing. Defaults to 3.
 #' @param ids The data.table of mappings between ids and symbols for genes
 #'
 #' @return A list of ggplot2 objects which can be plotted.
@@ -46,6 +47,7 @@ smoothForest <- function(hData,
                          orderBy = "estimate",
                          estimate = "hedgesG",
                          splitBy = "gene",
+                         fontSize = 3,
                          ids) {
 
     # function to draw the smooth forest plot.
@@ -91,7 +93,7 @@ smoothForest <- function(hData,
                                  comparisonNames = comparisonNames,
                                  splitBy = splitBy)
 
-        metaPlot <- .plotMetaData(metaData)
+        metaPlot <- .plotMetaData(metaData, fontSize)
         forestPlot <- .plotForest(x, estimate)
 
         if (splitBy == "gene") {

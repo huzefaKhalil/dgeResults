@@ -18,6 +18,7 @@ smoothForest(
   orderBy = "estimate",
   estimate = "hedgesG",
   splitBy = "gene",
+  fontSize = 3,
   ids
 )
 }
@@ -51,6 +52,8 @@ The function expects the columns to be the same as those returned by the
 \item{estimate}{Which estimate should be plotted. Options are \code{hedgesG} (the default), \code{cohensD}, \code{logFC}.}
 
 \item{splitBy}{Generate plots either by "gene" or by "comparison".}
+
+\item{fontSize}{The font size when printing. Defaults to 3.}
 
 \item{ids}{The data.table of mappings between ids and symbols for genes}
 }
