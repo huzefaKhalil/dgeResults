@@ -6,6 +6,7 @@
 \usage{
 smoothForest(
   hData,
+  metaStatistic = FALSE,
   includeModel = FALSE,
   includeName = FALSE,
   includeRegion = FALSE,
@@ -28,6 +29,8 @@ The data can contain information for a single gene or multiple genes.
 However many genes there are, those many plots will be returned.
 The function expects the columns to be the same as those returned by the
 \code{flattenDge} method.}
+
+\item{metaStatistic}{logical. A random-effect meta-analysis statistic is included if \code{TRUE}.}
 
 \item{includeModel}{logical. Includes the model if \code{TRUE}.}
 

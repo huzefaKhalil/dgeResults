@@ -6,6 +6,7 @@
 #' @importFrom heatmaply heatmaply
 #' @importFrom grid textGrob
 #' @importFrom grid gpar
+#' @importFrom metafor rma
 NULL
 
 #' Title
@@ -15,6 +16,7 @@ NULL
 #'              However many genes there are, those many plots will be returned.
 #'              The function expects the columns to be the same as those returned by the
 #'              \code{flattenDge} method.
+#' @param metaStatistic logical. A random-effect meta-analysis statistic is included if \code{TRUE}.
 #' @param includeModel logical. Includes the model if \code{TRUE}.
 #' @param includeName logical. Includes the experiment name if \code{TRUE}.
 #' @param includeRegion logical. Includes the brain region if \code{TRUE}.
@@ -35,6 +37,7 @@ NULL
 #'
 #' @examples
 smoothForest <- function(hData,
+                         metaStatistic = FALSE,
                          includeModel = FALSE,
                          includeName = FALSE,
                          includeRegion = FALSE,
@@ -79,8 +82,28 @@ smoothForest <- function(hData,
 
         x <- .order(x, orderBy, estimate)
 
+        ms <- NULL
+        # do the meta analysis
+        if (metaStatistic) {
+            if (estimate == "cohensD") {
+                estM <- "cohensD"
+                varM <- "varD"
+            } else {
+                estM <- "hedgesG"
+                varM <- "varG"
+            }
+
+            tryCatch({
+                meta <- metafor::rma(x[[estM]], x[[varM]])
+                ms <- data.table("statistic" = meta$b[1, ],
+                                 "se" = meta$se,
+                                 "pval" = meta$pval)
+            }, finally = {})
+        }
+
         # make the data table
         metaData <- .getMetaData(x,
+                                 ms,
                                  includeModel = includeModel,
                                  includeName = includeName,
                                  includeRegion = includeRegion,
@@ -94,7 +117,7 @@ smoothForest <- function(hData,
                                  splitBy = splitBy)
 
         metaPlot <- .plotMetaData(metaData, fontSize)
-        forestPlot <- .plotForest(x, estimate)
+        forestPlot <- .plotForest(x, ms, estimate)
 
         if (splitBy == "gene") {
             title <- ids[id %in% x$id[1]]$compound.symbol

@@ -18,7 +18,8 @@ Imports:
     digest,
     heatmaply,
     DBI,
-    RSQLite
+    RSQLite,
+    metafor
 Depends:
     R (>= 3.5.0)
 Collate:

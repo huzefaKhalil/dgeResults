@@ -61,7 +61,7 @@
 
 
 # returns a forest plot only
-.plotForest <- function(fd, estimate) {
+.plotForest <- function(fd, ms = NULL, estimate) {
 
     # basic idea by dspaks @ https://gist.github.com/dsparks/818997..
     # That one was way too convoluted... This simplifies things quite a bit
@@ -85,11 +85,17 @@
     emphasis <- 1 - seq(0, 1, length = length(multiplier) +1)[-1]
     transparency <- 1 / (length(multiplier) / 4)
 
-    nr <- nrow(fd)
-
     # get the data we need to plot.. What should we plot? Hedger's g
     fd <- fd[, c("estimate", "stdErr")]
+
+    if (!is.null(ms)) {
+        fd <- rbind(data.table("estimate" = c(ms$statistic, NA),
+                               "stdErr" = c(ms$se, NA)),
+                    fd)
+    }
+
     fd$id <- 1:nrow(fd)
+    nr <- nrow(fd)
 
     # now, we have to expand the data to include the multiplier
     fd <- fd[rep(seq(1, nrow(fd)), length(multiplier))]
@@ -99,9 +105,10 @@
     emphasis <- rep(emphasis, each = nr)
 
     fd <- cbind(fd, multiplier, emphasis)
+    fd <- na.omit(fd)
 
     xLim <- range(fd$estimate - fd$multiplier*fd$stdErr, fd$estimate + fd$multiplier*fd$stdErr)
-    yLim <- c(-1, nr+1.5)
+    yLim <- c(0, nr+1.5)
 
     ggplot(data = fd, aes(x = estimate, y = id, xmin = estimate - multiplier * stdErr, xmax = estimate + multiplier * stdErr)) +
         geom_vline(xintercept = 0, lwd = I(7/12), colour = I(hsv(0/12, 7/12, 7/12)), alpha = I(5/12)) +
@@ -141,7 +148,7 @@
 
     xVals <- colArea[1:ncol(md)]
     xLim <- range(colArea)
-    yLim <- c(-1, nrow(md) + 1.5)
+    yLim <- c(0, nrow(md) + 1.5)
 
     # if FDR is present, color red
     if ("FDR" %in% colnames(md)) {
@@ -185,7 +192,7 @@
 }
 
 
-.getMetaData <- function(x, includeModel=F, includeName=F,
+.getMetaData <- function(x, ms = NULL, includeModel=F, includeName=F,
                          includeRegion=F, includeEstimate=F,
                          includeTreatment=F, includeTimepoint=F,
                          includeSex=F,
@@ -235,6 +242,16 @@
 
         if (isTRUE(includePval))
             outDF <- data.table(outDF, "P-value" = format(x$pvalue, digits = 3))
+
+        if (!is.null(ms)) {
+            pl <- outDF[(nrow(outDF) + 1):(nrow(outDF) + 2),]
+            pl[1:2, ] <- ""
+            pl[1, "Comparison"] <- "Summary"
+            pl[1, "Estimate"] <- format(ms$statistic, digits = 2)
+            pl[1, "P-value"] <- format(ms$pval, digits = 3)
+
+            outDF <- rbind(pl, outDF)
+        }
 
     } else {
         # just show the gene name, logFC, p-value and fdr
