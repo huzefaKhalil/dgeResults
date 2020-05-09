@@ -20,8 +20,6 @@ Imports:
     DBI,
     RSQLite,
     metafor
-Suggests:
-    parallel
 Depends:
     R (>= 3.5.0)
 Collate:

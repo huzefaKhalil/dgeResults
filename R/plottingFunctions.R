@@ -78,46 +78,64 @@ smoothForest <- function(hData,
         hData <- split(hData, by = "comparisonID")
 
     # next, loop over each genes
-    if (!requireNamespace("parallel", quietly = TRUE)) {
-        outPlots <- mapply(function(x, nx) {
-            .forestPlot(x, nx,
-                        metaStatistic,
-                        includeModel,
-                        includeName,
-                        includeRegion,
-                        includeEstimate,
-                        includeTreatment,
-                        includeTimepoint,
-                        includeSex,
-                        includePval,
-                        comparisonNames,
-                        orderBy,
-                        estimate,
-                        splitBy,
-                        fontSize,
-                        ids)
-        }, hData, names(hData), SIMPLIFY = FALSE)
-    } else {
-        outPlots <- parallel::mcmapply(function(x, nx) {
-            .forestPlot(x, nx,
-                        metaStatistic,
-                        includeModel,
-                        includeName,
-                        includeRegion,
-                        includeEstimate,
-                        includeTreatment,
-                        includeTimepoint,
-                        includeSex,
-                        includePval,
-                        comparisonNames,
-                        orderBy,
-                        estimate,
-                        splitBy,
-                        fontSize,
-                        ids)
-        }, hData, names(hData), SIMPLIFY = FALSE,
-        mc.silent = TRUE, mc.cores = getOption("mc.cores", 4L))
-    }
+    outPlots <- Map(function(x, nx) {
+
+        x <- .order(x, orderBy, estimate)
+
+        ms <- NULL
+        # do the meta analysis
+        if (metaStatistic) {
+            if (estimate == "cohensD") {
+                estM <- "cohensD"
+                varM <- "varD"
+            } else {
+                estM <- "hedgesG"
+                varM <- "varG"
+            }
+
+            tryCatch({
+                meta <- metafor::rma(x[[estM]], x[[varM]])
+                ms <- data.table("statistic" = meta$b[1, ],
+                                 "se" = meta$se,
+                                 "pval" = meta$pval)
+            }, finally = {})
+        }
+
+        # make the data table
+        metaData <- .getMetaData(x,
+                                 ms,
+                                 includeModel = includeModel,
+                                 includeName = includeName,
+                                 includeRegion = includeRegion,
+                                 includeEstimate = includeEstimate,
+                                 includeTreatment = includeTreatment,
+                                 includeTimepoint = includeTimepoint,
+                                 includeSex = includeSex,
+                                 includePval = includePval,
+                                 estimate = estimate,
+                                 comparisonNames = comparisonNames,
+                                 splitBy = splitBy)
+
+        metaPlot <- .plotMetaData(metaData, fontSize)
+        forestPlot <- .plotForest(x, ms, estimate)
+
+        if (splitBy == "gene") {
+            title <- ids[id %in% x$id[1]]$compound.symbol
+            fSize <- 15
+            layout <- matrix(c(1, 1, 1, 1, 1, 2, 2, 2), nrow=1)
+        } else {
+            title <- paste(x$comparison[1], x$name[1], x$region[1], sep = ", ")
+            fSize <- 10
+            layout <- matrix(c(1, 2), nrow=1)
+        }
+
+        # layout <- matrix(c(rep(1, times = 1 + ncol(metaData)), 2, 2, 2, 2, 2), nrow = 1)
+        # as_ggplot(gridExtra::arrangeGrob(metaPlot, forestPlot, layout_matrix = layout))
+        ggpubr::as_ggplot(gridExtra::arrangeGrob(metaPlot, forestPlot, layout_matrix = layout,
+                                                 top = grid::textGrob(label = title,
+                                                                      gp = grid::gpar(fontsize=fSize, fontface=2)),
+                                                 padding = unit(1, "line")))
+    }, hData, names(hData))
 
     return(outPlots)
 }
