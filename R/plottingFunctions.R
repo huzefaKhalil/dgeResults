@@ -93,12 +93,12 @@ smoothForest <- function(hData,
                 varM <- "varG"
             }
 
-            tryCatch({
+            ms <- tryCatch({
                 meta <- metafor::rma(x[[estM]], x[[varM]])
-                ms <- data.table("statistic" = meta$b[1, ],
-                                 "se" = meta$se,
-                                 "pval" = meta$pval)
-            }, finally = {})
+                data.table("statistic" = meta$b[1, ],
+                           "se" = meta$se,
+                           "pval" = meta$pval)
+            }, error = function(e) return(NULL), finally = {})
         }
 
         # make the data table
