@@ -15,6 +15,3 @@ The species is returned
 \description{
 The species.
 }
-\examples{
-getSpecies(dgeExperiment)
-}

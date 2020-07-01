@@ -15,6 +15,3 @@ A character vector with gene symbols
 \description{
 Get the gene symbols for this experiment
 }
-\examples{
-getGeneSymbol(dgeExp)
-}

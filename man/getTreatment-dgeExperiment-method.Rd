@@ -15,6 +15,3 @@ A character vector of the treatments. "None" is returned if there are none.
 \description{
 Get the treatments in the experiment
 }
-\examples{
-getTreatments(dgeExperiment)
-}

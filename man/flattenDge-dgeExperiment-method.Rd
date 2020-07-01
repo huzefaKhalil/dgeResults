@@ -12,7 +12,7 @@
 \item{geneId}{Information for only these id's is returned}
 }
 \value{
-A data.table conatining all the information in the experiment.
+A data.table containing all the information in the experiment.
 }
 \description{
 Flatten an experiment to a data table

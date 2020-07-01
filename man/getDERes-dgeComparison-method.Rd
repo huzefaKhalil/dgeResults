@@ -18,7 +18,3 @@ A data frame containing the DE results and effect sizes for all genes.
 \description{
 This is a data frame containing the per gene DE results for this particular comparison.
 }
-\examples{
-getDERes(dge)
-getDERes(dge, c(group2, group1))
-}

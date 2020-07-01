@@ -17,6 +17,3 @@ An object of class dgeComparison
 \description{
 Convenience method to reverse the direction of a comparison
 }
-\examples{
-reverseComparison(dge)
-}

@@ -15,6 +15,3 @@ Character with brain region.
 \description{
 One of "HPC", "vHPC", "dHPC", "DG", "vDG", "dDG", "PFC", "NACC", "STR" or "VTA".
 }
-\examples{
-getRegion(dge)
-}

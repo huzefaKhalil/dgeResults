@@ -38,7 +38,3 @@ character vector of length two. If need be, the comparison will be reversed. One
 needs to be specified. If both treatment and region are specified, the comparison will be matched using both parameters.
 In general, this performs an AND, not an OR. Comparisons matching ALL parameters will be returned.
 }
-\examples{
-#getComparison(fslExperiment, groups = c("FSL", "FRL"))
-#getComparison(fslExperiment, region = "HPC")
-}

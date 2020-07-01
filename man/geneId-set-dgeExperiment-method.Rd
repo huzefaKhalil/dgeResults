@@ -17,6 +17,3 @@
 \description{
 Set the gene DGE id's for this experiment
 }
-\examples{
-geneId(dgeExp) <- dgeIDs
-}

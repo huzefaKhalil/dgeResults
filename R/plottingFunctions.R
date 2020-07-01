@@ -7,6 +7,8 @@
 #' @importFrom grid textGrob
 #' @importFrom grid gpar
 #' @importFrom metafor rma
+#' @importFrom grDevices gray
+#' @importFrom grDevices hsv
 NULL
 
 #' Title
@@ -35,7 +37,6 @@ NULL
 #' @return A list of ggplot2 objects which can be plotted.
 #' @export
 #'
-#' @examples
 smoothForest <- function(hData,
                          metaStatistic = FALSE,
                          includeModel = FALSE,
@@ -155,7 +156,6 @@ smoothForest <- function(hData,
 #' @return An object of class heatmapr
 #' @export
 #'
-#' @examples
 heatmap.3 <- function(hData, estimate = "hedgesG", ids = NULL, Rowv = TRUE, Colv = TRUE) {
 
     if (!is.data.table(hData))

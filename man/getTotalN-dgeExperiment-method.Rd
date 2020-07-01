@@ -15,6 +15,3 @@ The total number of animals in the experiment.
 \description{
 Get total N
 }
-\examples{
-getTotalN(dgeExperiment)
-}

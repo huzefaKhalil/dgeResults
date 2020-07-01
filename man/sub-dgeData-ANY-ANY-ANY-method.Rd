@@ -16,6 +16,3 @@ and object of class `dgeData`
 This function returns a subsetted dgeData object containing all the experiments but only the selected genes for which an id is given.
 i can be a vector of id's or a logical vector with the same number of rows as the data set.
 }
-\examples{
-`dge[c(TRUE, FALSE, FALSE, TRUE)]`
-}

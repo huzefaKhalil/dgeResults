@@ -15,6 +15,3 @@ A vector of gene symbols
 \description{
 Get a vector of gene symbols for this comparison.
 }
-\examples{
-getGeneSymbol(dge)
-}

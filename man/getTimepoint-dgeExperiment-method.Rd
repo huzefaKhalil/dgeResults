@@ -15,6 +15,3 @@ A character vector of the timepoints. "None" is returned if there are none.
 \description{
 Get the timepoints in the experiment
 }
-\examples{
-getTreatments(dgeExperiment)
-}

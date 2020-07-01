@@ -15,6 +15,3 @@ A character vector of species in the data set. Currently limited to "mouse", "ra
 \description{
 Get Species in this data set
 }
-\examples{
-getSpecies(dgeDataSet)
-}

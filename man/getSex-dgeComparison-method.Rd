@@ -15,6 +15,3 @@ Character vector with the sex.
 \description{
 "male" or "female" or "both"
 }
-\examples{
-getSex(dge)
-}

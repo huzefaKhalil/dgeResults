@@ -15,6 +15,3 @@ A character vector with ensembl id's
 \description{
 Get the gene ensembl id's for this experiment
 }
-\examples{
-getGeneEns(dgeExp)
-}

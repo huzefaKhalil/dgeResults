@@ -57,6 +57,10 @@ means subsetting the DE results only; all the meta-data stays the same.
 
 \item{\code{n.effective}}{Internally calculated in order to calculate effect sizes}
 
-\item{\code{comparisonID}}{The internal comparison ID.}
+\item{\code{owner}}{The system lab name of the owner. Only useful if it is a private data set}
+
+\item{\code{public}}{Logical flag. If true, then the data set can be viewed by all with access to the system.}
+
+\item{\code{comparisonID}}{The internal comparison ID}
 }}
 

@@ -15,6 +15,3 @@ A character with the experiment model
 \description{
 Returns the experiment model
 }
-\examples{
-getModel(dgeExperiment)
-}

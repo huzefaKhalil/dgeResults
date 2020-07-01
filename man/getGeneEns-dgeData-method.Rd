@@ -17,7 +17,3 @@ A list with one element for each species giving the unique Ensembl id's present 
 \description{
 Get the ensemble id's for a particular species in a DGE data set
 }
-\examples{
-getGeneEnsembl(dataSet, "mouse")
-getGeneEnsembl(dataSet, c("Mouse", "Rat"))
-}

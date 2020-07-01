@@ -15,6 +15,3 @@ A vector of ensemble ids
 \description{
 Get a vector of ensembl id's for the genes in this comparison.
 }
-\examples{
-getGeneEns(dge)
-}

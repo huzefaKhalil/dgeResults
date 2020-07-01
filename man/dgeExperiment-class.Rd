@@ -37,5 +37,9 @@ this class from a list of comparisons.
 \item{\code{totalN}}{The total number of animals in this experiment}
 
 \item{\code{description}}{Text describing the experiment. This is optional but highly recommended.}
+
+\item{\code{owner}}{The system lab name of the owner. Only useful if it is a private data set}
+
+\item{\code{public}}{Logical flag. If true, then the data set can be viewed by all with access to the system.}
 }}
 

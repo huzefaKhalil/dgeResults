@@ -15,6 +15,3 @@ A vector of DGE ids
 \description{
 Gets the vector of DGE id's for the genes in this comparison.
 }
-\examples{
-getGeneId(dge)
-}

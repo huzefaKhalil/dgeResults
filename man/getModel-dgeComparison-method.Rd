@@ -15,6 +15,3 @@ the model name
 \description{
 Get the model name
 }
-\examples{
-getModel(dge)
-}

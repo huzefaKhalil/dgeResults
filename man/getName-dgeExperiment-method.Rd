@@ -15,6 +15,3 @@ The experiment name
 \description{
 Returns the experiment name
 }
-\examples{
-getName(dgeExperiment)
-}

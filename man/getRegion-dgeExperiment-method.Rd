@@ -15,6 +15,3 @@ A character vector of the brain regions.
 \description{
 Get the brain regions of the experiment
 }
-\examples{
-getRegions(dgeExperiment)
-}

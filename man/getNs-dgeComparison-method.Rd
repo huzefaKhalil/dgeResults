@@ -15,6 +15,3 @@ A named integer vector of length two with the group sizes.
 \description{
 Is used to calculate the effect size. Not sure how useful it will be for users, but its there just in case.
 }
-\examples{
-getNs(dge)
-}

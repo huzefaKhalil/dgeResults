@@ -15,7 +15,9 @@ dgeComparison(
   sex,
   platform,
   groups,
-  Ns
+  Ns,
+  owner = "",
+  public = TRUE
 )
 }
 \arguments{

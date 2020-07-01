@@ -29,6 +29,3 @@ String with the specified comparison
 \description{
 Print the comparison, namely Group1 - Group2
 }
-\examples{
-printComparison(dge)
-}

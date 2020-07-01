@@ -15,6 +15,3 @@ A character vector of the sexes of which we have comparisons. Can include "both"
 \description{
 Get the sexes in the experiment.
 }
-\examples{
-getSex(dgeExperiment)
-}

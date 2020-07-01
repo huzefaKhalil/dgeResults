@@ -15,6 +15,3 @@ A character vector with DGE id's
 \description{
 Get the gene DGE id's for this experiment
 }
-\examples{
-geneId(dgeExp)
-}

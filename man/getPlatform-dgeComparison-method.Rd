@@ -15,6 +15,3 @@ Character with the platform name.
 \description{
 Either MicroArray or RNASeq. Maybe extend to others like ChIPSeq?
 }
-\examples{
-getPlatform(dge)
-}

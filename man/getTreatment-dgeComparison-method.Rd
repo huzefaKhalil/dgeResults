@@ -15,6 +15,3 @@ Character with the treatment name
 \description{
 Get the treatment for this comparison. If no treatment, "None" is returned.
 }
-\examples{
-getTreatment(dge)
-}

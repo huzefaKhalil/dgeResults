@@ -15,6 +15,3 @@ String specifying the platform
 \description{
 The platform: microarray or rna-seq
 }
-\examples{
-getPlatform(dgeExperiment)
-}

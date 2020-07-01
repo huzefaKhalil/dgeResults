@@ -15,6 +15,3 @@ A names character vector of length two with the group names.
 \description{
 Returns the names of the groups in the comparison. The comparison is always Group1 - Group2
 }
-\examples{
-getGroups(dge)
-}

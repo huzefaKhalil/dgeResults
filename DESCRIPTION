@@ -19,7 +19,8 @@ Imports:
     heatmaply,
     DBI,
     RSQLite,
-    metafor
+    metafor,
+    methods
 Depends:
     R (>= 3.5.0)
 Collate:

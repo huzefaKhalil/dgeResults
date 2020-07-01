@@ -1,6 +1,12 @@
 #' @include internalFunctions.R
 #' @import data.table
 #' @importFrom digest digest
+#' @importFrom methods is
+#' @importFrom methods new
+#' @importFrom stats na.omit
+#' @importFrom stats qnorm
+#' @importFrom stats setNames
+#' @importFrom utils read.csv
 NULL
 
 # Defines the formal class dgeComparison and associated functions
@@ -42,7 +48,9 @@ NULL
 #' @slot n.group1 Group 1 N
 #' @slot n.group2 GRoup 2 N
 #' @slot n.effective Internally calculated in order to calculate effect sizes
-#' @slot comparisonID The internal comparison ID.
+#' @slot owner The system lab name of the owner. Only useful if it is a private data set
+#' @slot public Logical flag. If true, then the data set can be viewed by all with access to the system.
+#' @slot comparisonID The internal comparison ID
 #'
 #' @export
 #'
@@ -82,6 +90,9 @@ setClass(
         # The n's of the two groups
         n.group2 = "numeric",
         n.effective = "numeric",  # calculated internally. Used for effect size measures.
+
+        owner = "character",
+        public = "logical",
 
         comparisonID = "character"  # A unique id identifying this comparison
     )
@@ -161,6 +172,8 @@ getDERes <- function(o, groups = NULL) stop("Method undefined for an object of t
 getGeneEns <- function(o, ...) stop("Method undefined for an object of this class.")
 getGeneId <- function(o) stop("Method undefined for an object of this class.")
 getGeneSymbol <- function(o, ...) stop("Method undefined for an object of this class.")
+getOwner <- function(o) stop("Method undefined for an object of this class.")
+getPublic <- function(o) stop("Method undefined for an object of this class.")
 geneId <- function(o) stop("Method undefined for an object of this class.")
 `geneId<-` <- function(o, value) stop("Method undefined for an object of this class.")
 reverseComparison <- function(o, ...) stop("Method undefined for an object of this class.")
@@ -182,6 +195,8 @@ setGeneric("getDERes", function(o, ...) { standardGeneric("getDERes") })
 setGeneric("getGeneEns", function(o, ...) { standardGeneric("getGeneEns") })
 setGeneric("getGeneId", function(o) { standardGeneric("getGeneId") })
 setGeneric("getGeneSymbol", function(o, ...) { standardGeneric("getGeneSymbol") })
+setGeneric("getOwner", function(o) { standardGeneric("getOwner") })
+setGeneric("getPublic", function(o) { standardGeneric("getPublic") })
 setGeneric("geneId", function(o) { standardGeneric("geneId") })
 setGeneric("geneId<-", function(o, value) { standardGeneric("geneId<-") })
 setGeneric("reverseComparison", function(o, ...) { standardGeneric("reverseComparison") })
@@ -228,8 +243,6 @@ setMethod("show", signature = "dgeComparison",
 #' @return the model name
 #' @export
 #'
-#' @examples
-#' getModel(dge)
 setMethod("getModel", signature = "dgeComparison", function(o) o@model)
 
 #' Get the experiment name
@@ -241,8 +254,6 @@ setMethod("getModel", signature = "dgeComparison", function(o) o@model)
 #' @return the experiment name
 #' @export
 #'
-#' @examples
-#' getName(dge)
 setMethod("getName", signature = "dgeComparison", function(o) o@name)
 
 #' Get the treatment for this comparison. If no treatment, "None" is returned.
@@ -252,8 +263,6 @@ setMethod("getName", signature = "dgeComparison", function(o) o@name)
 #' @return Character with the treatment name
 #' @export
 #'
-#' @examples
-#' getTreatment(dge)
 setMethod("getTreatment", signature = "dgeComparison", function(o) o@treatment)
 
 #' Get the timepoint for this comparison. If no timepoint, "None" is returned.
@@ -263,8 +272,6 @@ setMethod("getTreatment", signature = "dgeComparison", function(o) o@treatment)
 #' @return Character with the timepoint name
 #' @export
 #'
-#' @examples
-#' getTimepoint(dge)
 setMethod("getTimepoint", signature = "dgeComparison", function(o) o@timepoint)
 
 #' Get the species.
@@ -276,8 +283,6 @@ setMethod("getTimepoint", signature = "dgeComparison", function(o) o@timepoint)
 #' @return Character with the species name
 #' @export
 #'
-#' @examples
-#' getSpecies(dge)
 setMethod("getSpecies", signature = "dgeComparison", function(o) o@species)
 
 #' Gets the brain region.
@@ -289,8 +294,6 @@ setMethod("getSpecies", signature = "dgeComparison", function(o) o@species)
 #' @return Character with brain region.
 #' @export
 #'
-#' @examples
-#' getRegion(dge)
 setMethod("getRegion", signature = "dgeComparison", function(o) o@region)
 
 #' Gets the experiment platform.
@@ -302,8 +305,6 @@ setMethod("getRegion", signature = "dgeComparison", function(o) o@region)
 #' @return Character with the platform name.
 #' @export
 #'
-#' @examples
-#' getPlatform(dge)
 setMethod("getPlatform", signature = "dgeComparison", function(o) o@platform)
 
 #' Sex of the animals used in this comparison.
@@ -315,7 +316,6 @@ setMethod("getPlatform", signature = "dgeComparison", function(o) o@platform)
 #' @return Character vector with the sex.
 #' @export
 #'
-#' @examples getSex(dge)
 setMethod("getSex", signature = "dgeComparison", function(o) o@sex)
 
 #' Gets the groups for this comparison.
@@ -327,7 +327,6 @@ setMethod("getSex", signature = "dgeComparison", function(o) o@sex)
 #' @return A names character vector of length two with the group names.
 #' @export
 #'
-#' @examples getGroups(dge)
 setMethod("getGroups", signature = "dgeComparison", function(o) {
     setNames(c(o@group1, o@group2), c(o@group1, o@group2))
 })
@@ -341,10 +340,28 @@ setMethod("getGroups", signature = "dgeComparison", function(o) {
 #' @return A named integer vector of length two with the group sizes.
 #' @export
 #'
-#' @examples getNs(dge)
 setMethod("getNs", signature = "dgeComparison", function(o) {
     setNames(c(o@n.group1, o@n.group2), c(o@group1, o@group2))
 })
+
+#' Returns the lab where this experiment was conducted. If it is private,
+#' only lab members will have access to this data.
+#'
+#' @param o An object of class \code{dgeComparison}
+#'
+#' @return A character string with the owner of the data. Returns \code{NULL} if not set.
+#' @export
+#'
+setMethod("getOwner", signature = "dgeComparison", function(o) o@owner)
+
+#' Returns a boolean value which is TRUE if the data is universally accessible.
+#'
+#' @param o An object of class \code{dgeComparison}
+#'
+#' @return A logical value, \code{TRUE} if it is public, \code{FALSE} otherwise.
+#' @export
+#'
+setMethod("getPublic", signature = "dgeComparison", function(o) o@public)
 
 #' Get a vector of ensembl id's for the genes in this comparison.
 #'
@@ -353,7 +370,6 @@ setMethod("getNs", signature = "dgeComparison", function(o) {
 #' @return A vector of ensemble ids
 #' @export
 #'
-#' @examples getGeneEns(dge)
 setMethod("getGeneEns", signature = "dgeComparison", function(o) o@deRes$ensembl)
 
 #' Get a vector of gene symbols for this comparison.
@@ -363,7 +379,6 @@ setMethod("getGeneEns", signature = "dgeComparison", function(o) o@deRes$ensembl
 #' @return A vector of gene symbols
 #' @export
 #'
-#' @examples getGeneSymbol(dge)
 setMethod("getGeneSymbol", signature = "dgeComparison", function(o) o@deRes$symbol)
 
 
@@ -374,7 +389,6 @@ setMethod("getGeneSymbol", signature = "dgeComparison", function(o) o@deRes$symb
 #' @return A vector of DGE ids
 #' @export
 #'
-#' @examples getGeneId(dge)
 setMethod("getGeneId", signature = "dgeComparison", function(o) o@deRes$id)
 
 #' Gets the vector of DGE id's for the genes in this comparison.
@@ -384,7 +398,6 @@ setMethod("getGeneId", signature = "dgeComparison", function(o) o@deRes$id)
 #' @return A vector of DGE ids
 #' @export
 #'
-#' @examples geneId(dge)
 setMethod("geneId", signature = "dgeComparison", function(o) o@deRes$id)
 
 #' Sets the DGE gene ids for a `dgeComparison`
@@ -395,7 +408,6 @@ setMethod("geneId", signature = "dgeComparison", function(o) o@deRes$id)
 #' @return An object of class `dgeComparison` with the ids set
 #' @export
 #'
-#' @examples geneId(dge) <- ids
 setMethod("geneId<-", signature = "dgeComparison", function(o, value) {
 
     # we expect a data frame as a value
@@ -436,9 +448,6 @@ setMethod("geneId<-", signature = "dgeComparison", function(o, value) {
 #' @return A data frame containing the DE results and effect sizes for all genes.
 #' @export
 #'
-#' @examples
-#' getDERes(dge)
-#' getDERes(dge, c(group2, group1))
 setMethod("getDERes", signature = "dgeComparison", function(o, groups = NULL) {
     if (is.null(groups)) return(o@deRes)
 
@@ -468,8 +477,6 @@ setMethod("getDERes", signature = "dgeComparison", function(o, groups = NULL) {
 #' @return An object of class dgeComparison
 #' @export
 #'
-#' @examples
-#' reverseComparison(dge)
 setMethod("reverseComparison", signature = "dgeComparison", function(o) {
 
     # groups <- getGroups(o)
@@ -501,7 +508,6 @@ setMethod("reverseComparison", signature = "dgeComparison", function(o) {
 #' @return A data.table with all relevant information
 #' @export
 #'
-#' @examples
 setMethod("flattenDge", signature = "dgeComparison", function(o, geneId = NULL) {
 
     if (is.null(geneId)) {
@@ -534,6 +540,8 @@ setMethod("flattenDge", signature = "dgeComparison", function(o, geneId = NULL) 
                           n.group1 = o@n.group2,
                           n.group2 = o@n.group1,
                           n.effective = o@n.effective,
+                          owner = o@owner,
+                          public = o@public,
                           comparisonID = o@comparisonID)
     } else {
         out <- data.table(deRes,
@@ -549,6 +557,8 @@ setMethod("flattenDge", signature = "dgeComparison", function(o, geneId = NULL) 
                           n.group1 = o@n.group1,
                           n.group2 = o@n.group2,
                           n.effective = o@n.effective,
+                          owner = o@owner,
+                          public = o@public,
                           comparisonID = o@comparisonID)
     }
 
@@ -567,8 +577,6 @@ setMethod("flattenDge", signature = "dgeComparison", function(o, geneId = NULL) 
 #' @return String with the specified comparison
 #' @export
 #'
-#' @examples
-#' printComparison(dge)
 setMethod("printComparison", signature = "dgeComparison", function(o,
                                                                    name = FALSE,
                                                                    region = FALSE,
@@ -617,7 +625,6 @@ setMethod("nrow", signature = "dgeComparison", function(x) nrow(x@deRes))
 #' @return A string with the name
 #' @export
 #'
-#' @examples
 setMethod("names", signature = "dgeComparison", function(x) getName(x))
 
 #' Subset the DE results of this comparison.
@@ -649,7 +656,6 @@ setMethod("[", signature = "dgeComparison", function(x, i) {
 #' @return A column of the DE results data frame.
 #' @export
 #'
-#' @examples
 setMethod("$", signature = "dgeComparison", function(x, name) {
     x@deRes[[name, exact = TRUE]]
 })
@@ -686,10 +692,9 @@ setMethod("$", signature = "dgeComparison", function(x, name) {
 #' @return A dgeComparison object.
 #' @export
 #'
-#' @examples
 dgeComparison <- function(deData, name, model, treatment = "None",
                           timepoint = "None", species, region, sex,
-                          platform, groups, Ns) {
+                          platform, groups, Ns, owner = "", public = TRUE) {
 
     # treatment is the only optional argument. All others must be specified and be strings and vectors. make sure they are
     stopifnot(class(deData) %in% c("data.frame", "character", "data.table"),
@@ -763,6 +768,9 @@ dgeComparison <- function(deData, name, model, treatment = "None",
         n.group1 = Ns[1],
         n.group2 = Ns[2],
         n.effective = n.effective,
+
+        owner = owner,
+        public = public,
 
         comparisonID = comparisonID
     )

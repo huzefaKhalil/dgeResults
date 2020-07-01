@@ -17,6 +17,3 @@ An object of class `dgeComparison` with the ids set
 \description{
 Sets the DGE gene ids for a `dgeComparison`
 }
-\examples{
-geneId(dge) <- ids
-}

@@ -15,6 +15,3 @@ Character with the species name
 \description{
 One of "mouse", "rat", or "human". The last is not yet implemented.
 }
-\examples{
-getSpecies(dge)
-}

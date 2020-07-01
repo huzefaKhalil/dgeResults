@@ -15,7 +15,6 @@ NULL
 #'
 #' @export
 #'
-#' @examples
 setClass(
     "dgeData",
 
@@ -58,7 +57,6 @@ setMethod("show", signature = "dgeData", function(object) {
 #' @return A character vector of species in the data set. Currently limited to "mouse", "rat" and "human"
 #' @export
 #'
-#' @examples getSpecies(dgeDataSet)
 setMethod("getSpecies", signature = "dgeData", function(o) unique(sapply(o@experiments, getSpecies)))
 
 #' Get the brain regions present in the DGE data set
@@ -68,7 +66,6 @@ setMethod("getSpecies", signature = "dgeData", function(o) unique(sapply(o@exper
 #' @return A character vector of brain regions present in this DGE data set.
 #' @export
 #'
-#' @examples
 setMethod("getRegion", signature = "dgeData", function(o) unique(unlist(sapply(o@experiments, getRegion))))
 
 #' Get the sexes present in this DGE data set
@@ -78,7 +75,6 @@ setMethod("getRegion", signature = "dgeData", function(o) unique(unlist(sapply(o
 #' @return A character vector of the sexes which are included in this data set. Can include "both" if some comparisons are across sexes.
 #' @export
 #'
-#' @examples
 setMethod("getSex", signature = "dgeData", function(o) unique(unlist(sapply(o@experiments, getSex))))
 
 #' Get the treatments present in this data set
@@ -88,7 +84,6 @@ setMethod("getSex", signature = "dgeData", function(o) unique(unlist(sapply(o@ex
 #' @return A character vector of the treatments in this data set.
 #' @export
 #'
-#' @examples
 setMethod("getTreatment", signature = "dgeData", function (o) unique(unlist(sapply(o@experiments, getTreatment))))
 
 #' Get the treatments present in this data set
@@ -98,7 +93,6 @@ setMethod("getTreatment", signature = "dgeData", function (o) unique(unlist(sapp
 #' @return A character vector of the timepoint in this data set.
 #' @export
 #'
-#' @examples
 setMethod("getTimepoint", signature = "dgeData", function (o) unique(unlist(sapply(o@experiments, getTimepoint))))
 
 #' Get the platforms present in this data set.
@@ -108,7 +102,6 @@ setMethod("getTimepoint", signature = "dgeData", function (o) unique(unlist(sapp
 #' @return A character vector of platforms, either Microarray or RNASeq or both.
 #' @export
 #'
-#' @examples
 setMethod("getPlatform", signature = "dgeData", function(o) unique(unlist(sapply(o@experiments, getPlatform))))
 
 #' Get the models present in this data set
@@ -118,7 +111,6 @@ setMethod("getPlatform", signature = "dgeData", function(o) unique(unlist(sapply
 #' @return A character vector with the model names.
 #' @export
 #'
-#' @examples
 setMethod("getModel", signature = "dgeData", function(o) unique(unlist(sapply(o@experiments, getModel))))
 
 #' Get the experiment names present in this data set
@@ -128,7 +120,6 @@ setMethod("getModel", signature = "dgeData", function(o) unique(unlist(sapply(o@
 #' @return A character vector with the experiment names.
 #' @export
 #'
-#' @examples
 setMethod("getName", signature = "dgeData", function(o) unique(unlist(sapply(o@experiments, getName))))
 
 #' Get a vector of groups
@@ -138,7 +129,6 @@ setMethod("getName", signature = "dgeData", function(o) unique(unlist(sapply(o@e
 #' @return A string vector of groups which are a part of the data set.
 #' @export
 #'
-#' @examples
 setMethod("getGroups", signature = "dgeData", function(o) unique(unlist(sapply(o@experiments, getGroups))))
 
 #' Get the internal comparison IDs of the comparisons in this data base
@@ -148,7 +138,6 @@ setMethod("getGroups", signature = "dgeData", function(o) unique(unlist(sapply(o
 #' @return A character vector of IDs
 #' @export
 #'
-#' @examples
 setMethod("getIds", signature = "dgeData", function(o) unlist(lapply(o@experiments, getIds)))
 
 #' Print the comparisons in this data object.
@@ -162,7 +151,6 @@ setMethod("getIds", signature = "dgeData", function(o) unlist(lapply(o@experimen
 #' @return A vector of strings with the comparisons. The vector is named by the ids of the comparisons
 #' @export
 #'
-#' @examples
 setMethod("printComparison", signature = "dgeData", function(o,
                                                              name = FALSE,
                                                              region = FALSE,
@@ -187,9 +175,6 @@ setMethod("printComparison", signature = "dgeData", function(o,
 #' @return A list with one element for each species giving the unique Ensembl id's present in each experiment.
 #' @export
 #'
-#' @examples
-#' getGeneEnsembl(dataSet, "mouse")
-#' getGeneEnsembl(dataSet, c("Mouse", "Rat"))
 setMethod("getGeneEns", signature = "dgeData", function(o, species) {
 
     species <- tolower(species)
@@ -219,9 +204,6 @@ setMethod("getGeneEns", signature = "dgeData", function(o, species) {
 #' @return A list with one element for each species giving the unique gene symbols present in each experiment.
 #' @export
 #'
-#' @examples
-#' getGeneEnsembl(dataSet, "mouse")
-#' getGeneEnsembl(dataSet, c("Mouse", "Rat"))
 setMethod("getGeneSymbol", signature = "dgeData", function(o, species) {
 
     species <- tolower(species)
@@ -250,7 +232,6 @@ setMethod("getGeneSymbol", signature = "dgeData", function(o, species) {
 #' @return a character vector of internal DGE ids
 #' @export
 #'
-#' @examples
 setMethod("geneId", signature = "dgeData", function(o) o@ids$id)
 
 # generic functions we will use
@@ -271,7 +252,6 @@ setGeneric("symbolToId", function(o, ...) { standardGeneric("symbolToId") })
 #' @return A list of objects of class \code{dgeExperiment}
 #' @export
 #'
-#' @examples
 setMethod("getExperiments", signature = "dgeData", function(o) o@experiments )
 
 #' Gets the experiments of a particular species in an DGE data set
@@ -282,7 +262,6 @@ setMethod("getExperiments", signature = "dgeData", function(o) o@experiments )
 #' @return \code{NULL} if there are no experiments for that species. Else an object of class \code{dgeData} with experiments from \code{species}
 #' @export
 #'
-#' @examples
 setMethod("getExperimentsBySpecies", signature = "dgeData", function(o, species) {
 
     species <- tolower(species)
@@ -325,7 +304,6 @@ setMethod("getExperimentsBySpecies", signature = "dgeData", function(o, species)
 #' @return A data.table with columns as comparisonIDs
 #' @export
 #'
-#' @examples
 setMethod("getColumnData", signature = "dgeData", function(o, column, comparisonID, conn = NULL) {
 
     validCols <- c("logFC", "se", "pvalue", "fdr", "cohensD", "varD", "hedgesG", "varG")
@@ -357,7 +335,6 @@ setMethod("getColumnData", signature = "dgeData", function(o, column, comparison
 #' @return A character vector with the gene ids which can be used to subset the data
 #' @export
 #'
-#' @examples
 setMethod("symbolToId", signature = "dgeData", function(o, geneSymbols, species = NULL) {
 
     if (is.null(species))
@@ -391,7 +368,6 @@ setMethod("symbolToId", signature = "dgeData", function(o, geneSymbols, species 
 #' @return and object of class `dgeData`
 #' @export
 #'
-#' @examples `dge[c(TRUE, FALSE, FALSE, TRUE)]`
 setMethod("[", signature = "dgeData", function(x, i) {
     x@experiments <- lapply(x@experiments, function(exp) {
         exp[i, ]
@@ -407,7 +383,6 @@ setMethod("[", signature = "dgeData", function(x, i) {
 #' @return
 #' @export
 #'
-#' @examples
 setMethod("reverseComparison", signature = "dgeData", function(o, comparisons) {
     o@experiments <- lapply(o@experiments, reverseComparison, comparisons = comparisons)
     return(o)
@@ -422,7 +397,6 @@ setMethod("reverseComparison", signature = "dgeData", function(o, comparisons) {
 #' @return A data.table conatining all the information in the experiment.
 #' @export
 #'
-#' @examples
 setMethod("flattenDge", signature = "dgeData", function(o, geneId = NULL, conn = NULL) {
     if (is.null(conn))
         return(rbindlist(lapply(o@experiments, flattenDge, geneId = geneId)))
@@ -483,7 +457,6 @@ setMethod("flattenDge", signature = "dgeData", function(o, geneId = NULL, conn =
 #' @return An \code{dgeData} object with the needed ids. If none found, NULL is returned.
 #' @export
 #'
-#' @examples
 setMethod("getComparisonById", signature = "dgeData", function(o, id) {
     exp <- lapply(o@experiments, getComparisonById, id)
 
@@ -506,7 +479,6 @@ setMethod("getComparisonById", signature = "dgeData", function(o, id) {
 #' @return An object of class \code{dgeData} with the id's removed
 #' @export
 #'
-#' @examples
 setMethod("removeComparison", signature = "dgeData", function(o, id) {
     exp <- lapply(o@experiments, removeComparison, id)
 
@@ -538,7 +510,6 @@ setMethod("removeComparison", signature = "dgeData", function(o, id) {
 #' @return If no comparison is matched, `NULL` is returned, else an object of class `dgeData` with the specified comparisons.
 #' @export
 #'
-#' @examples
 setMethod("getComparison", signature = "dgeData",
           function(o, groups=NULL, model=NULL, treatment=NULL, timepoint=NULL, region=NULL, sex=NULL, species=NULL, name=NULL)  {
               #TODO Add select by model and experiment name as well.
@@ -612,7 +583,6 @@ setMethod("getComparison", signature = "dgeData",
 #' @return A new `dgeData` object.
 #' @export
 #'
-#' @examples
 dgeData <- function(experiments) {
     # Just a note! Since this calls the .createIds method, NEVER USE IT INTERNALLY!
     # to initialize a new `dgeData` internally, always call the `new` method.

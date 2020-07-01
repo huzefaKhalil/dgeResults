@@ -15,6 +15,3 @@ the experiment name
 \description{
 Usually of the form LabName-experimentNumber. Is the internal DGE identifier for this particular experiment.
 }
-\examples{
-getName(dge)
-}

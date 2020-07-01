@@ -15,6 +15,3 @@ Character with the timepoint name
 \description{
 Get the timepoint for this comparison. If no timepoint, "None" is returned.
 }
-\examples{
-getTimepoint(dge)
-}

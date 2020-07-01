@@ -24,6 +24,8 @@ NULL
 #' @slot groups The different groups in the experiment
 #' @slot totalN The total number of animals in this experiment
 #' @slot description Text describing the experiment. This is optional but highly recommended.
+#' @slot owner The system lab name of the owner. Only useful if it is a private data set
+#' @slot public Logical flag. If true, then the data set can be viewed by all with access to the system.
 #'
 #' @export
 #'
@@ -45,7 +47,9 @@ setClass(
         groups = "character",
         totalN = "numeric",
 
-        description = "character"  # An optional description of the experiment
+        description = "character",  # An optional description of the experiment
+        owner = "character",  # The username of the owner, if any. Only important if private
+        public = "logical"    # If the dataset is public or not.
     )
 )
 
@@ -102,7 +106,6 @@ setValidity("dgeExperiment", validDGEExperiment)
 #' @return
 #' @export
 #'
-#' @examples
 setMethod("show", signature = "dgeExperiment",
           function(object) {
               cat("Experiment Name:", object@name, "\n")
@@ -114,6 +117,10 @@ setMethod("show", signature = "dgeExperiment",
               cat("Sex:", object@sexes, "\n")
               cat("Number of comparisons:", length(object@comparisons), "\n")
               cat("Groups:", object@groups, "\n")
+              if (!is.null(object@owner)){
+                  cat("Owner:", object@owner, "\n")
+              }
+              cat("Public:", ifelse(object@public, "Yes", "No"), "\n")
           })
 
 #' Returns the experiment model
@@ -123,8 +130,6 @@ setMethod("show", signature = "dgeExperiment",
 #' @return A character with the experiment model
 #' @export
 #'
-#' @examples
-#' getModel(dgeExperiment)
 setMethod("getModel", signature = "dgeExperiment", function(o) o@model)
 
 #' Returns the experiment name
@@ -134,8 +139,6 @@ setMethod("getModel", signature = "dgeExperiment", function(o) o@model)
 #' @return The experiment name
 #' @export
 #'
-#' @examples
-#' getName(dgeExperiment)
 setMethod("getName", signature = "dgeExperiment", function(o) o@name)
 
 #' The species.
@@ -145,8 +148,6 @@ setMethod("getName", signature = "dgeExperiment", function(o) o@name)
 #' @return The species is returned
 #' @export
 #'
-#' @examples
-#' getSpecies(dgeExperiment)
 setMethod("getSpecies", signature = "dgeExperiment", function(o) o@species)
 
 #' The platform: microarray or rna-seq
@@ -156,8 +157,6 @@ setMethod("getSpecies", signature = "dgeExperiment", function(o) o@species)
 #' @return String specifying the platform
 #' @export
 #'
-#' @examples
-#' getPlatform(dgeExperiment)
 setMethod("getPlatform", signature = "dgeExperiment", function(o) o@platform)
 
 #' Get a vector of groups
@@ -171,7 +170,6 @@ setMethod("getPlatform", signature = "dgeExperiment", function(o) o@platform)
 #' @return A string vector of groups which are a part of the experiment.
 #' @export
 #'
-#' @examples
 setMethod("getGroups", signature = "dgeExperiment", function(o) o@groups)
 
 #' Get the treatments in the experiment
@@ -181,8 +179,6 @@ setMethod("getGroups", signature = "dgeExperiment", function(o) o@groups)
 #' @return A character vector of the treatments. "None" is returned if there are none.
 #' @export
 #'
-#' @examples
-#' getTreatments(dgeExperiment)
 setMethod("getTreatment", signature = "dgeExperiment", function(o) o@treatments)
 
 #' Get the timepoints in the experiment
@@ -192,8 +188,6 @@ setMethod("getTreatment", signature = "dgeExperiment", function(o) o@treatments)
 #' @return A character vector of the timepoints. "None" is returned if there are none.
 #' @export
 #'
-#' @examples
-#' getTreatments(dgeExperiment)
 setMethod("getTimepoint", signature = "dgeExperiment", function(o) o@timepoints)
 
 #' Get the brain regions of the experiment
@@ -203,8 +197,6 @@ setMethod("getTimepoint", signature = "dgeExperiment", function(o) o@timepoints)
 #' @return A character vector of the brain regions.
 #' @export
 #'
-#' @examples
-#' getRegions(dgeExperiment)
 setMethod("getRegion", signature = "dgeExperiment", function(o) o@regions)
 
 #' Get the sexes in the experiment.
@@ -214,8 +206,26 @@ setMethod("getRegion", signature = "dgeExperiment", function(o) o@regions)
 #' @return A character vector of the sexes of which we have comparisons. Can include "both"
 #' @export
 #'
-#' @examples getSex(dgeExperiment)
 setMethod("getSex", signature = "dgeExperiment", function(o) o@sexes)
+
+#' Returns the lab where this experiment was conducted. If it is private,
+#' only lab members will have access to this data.
+#'
+#' @param o An object of class \code{dgeExperiment}
+#'
+#' @return A character string with the owner of the data. Returns \code{NULL} if not set.
+#' @export
+#'
+setMethod("getOwner", signature = "dgeExperiment", function(o) o@owner)
+
+#' Returns a boolean value which is TRUE if the data is universally accessible.
+#'
+#' @param o An object of class \code{dgeExperiment}
+#'
+#' @return A logical value, \code{TRUE} if it is public, \code{FALSE} otherwise.
+#' @export
+#'
+setMethod("getPublic", signature = "dgeExperiment", function(o) o@public)
 
 #' Get the gene ensembl id's for this experiment
 #'
@@ -224,7 +234,6 @@ setMethod("getSex", signature = "dgeExperiment", function(o) o@sexes)
 #' @return A character vector with ensembl id's
 #' @export
 #'
-#' @examples getGeneEns(dgeExp)
 setMethod("getGeneEns", signature = "dgeExperiment", function(o) o@comparisons[[1]]@deRes$ensembl)
 
 #' Get the gene symbols for this experiment
@@ -234,7 +243,6 @@ setMethod("getGeneEns", signature = "dgeExperiment", function(o) o@comparisons[[
 #' @return A character vector with gene symbols
 #' @export
 #'
-#' @examples getGeneSymbol(dgeExp)
 setMethod("getGeneSymbol", signature = "dgeExperiment", function(o) o@comparisons[[1]]@deRes$symbol)
 
 #' Get the gene DGE id's for this experiment
@@ -244,7 +252,6 @@ setMethod("getGeneSymbol", signature = "dgeExperiment", function(o) o@comparison
 #' @return A character vector with DGE id's
 #' @export
 #'
-#' @examples getGeneId(dgeExp)
 setMethod("getGeneId", signature = "dgeExperiment", function(o) o@comparisons[[1]]@deRes$id)
 
 #' Get the gene DGE id's for this experiment
@@ -254,7 +261,6 @@ setMethod("getGeneId", signature = "dgeExperiment", function(o) o@comparisons[[1
 #' @return A character vector with DGE id's
 #' @export
 #'
-#' @examples geneId(dgeExp)
 setMethod("geneId", signature = "dgeExperiment", function(o) o@comparisons[[1]]$id)
 
 #' Set the gene DGE id's for this experiment
@@ -265,7 +271,6 @@ setMethod("geneId", signature = "dgeExperiment", function(o) o@comparisons[[1]]$
 #' @return
 #' @export
 #'
-#' @examples geneId(dgeExp) <- dgeIDs
 setMethod("geneId<-", signature = "dgeExperiment", function(o, value) {
     o@comparisons <- lapply(o@comparisons, function(x) {
         geneId(x) <- value
@@ -279,10 +284,9 @@ setMethod("geneId<-", signature = "dgeExperiment", function(o, value) {
 #' @param o An object of class \code{dgeExperiment}
 #' @param geneId Information for only these id's is returned
 #'
-#' @return A data.table conatining all the information in the experiment.
+#' @return A data.table containing all the information in the experiment.
 #' @export
 #'
-#' @examples
 setMethod("flattenDge", signature = "dgeExperiment", function(o, geneId = NULL) {
     rbindlist(lapply(o@comparisons, flattenDge, geneId = geneId))
 })
@@ -295,7 +299,6 @@ setMethod("flattenDge", signature = "dgeExperiment", function(o, geneId = NULL) 
 #' @return The \code{dgeExperiment} object with the IDs reversed
 #' @export
 #'
-#' @examples
 setMethod("reverseComparison", signature = "dgeExperiment", function(o, comparisons) {
     # check if any comparison is to be reversed here
     o@comparisons <- lapply(o@comparisons, function(x) {
@@ -321,7 +324,6 @@ setMethod("reverseComparison", signature = "dgeExperiment", function(o, comparis
 #' @return A vector of strings with the comparisons
 #' @export
 #'
-#' @examples
 setMethod("printComparison", signature = "dgeExperiment", function(o,
                                                                    name = FALSE,
                                                                    region = FALSE,
@@ -351,6 +353,8 @@ setGeneric("getTotalN", function(o) { standardGeneric("getTotalN") })
 setGeneric("getIds", function(o) { standardGeneric("getIds") })
 setGeneric("removeComparison", function(o, id) { standardGeneric("removeComparison") })
 
+
+
 #' Get all the internal comparison IDs in this experiment
 #'
 #' @param o An object of class \code{dgeExperiment} from which we want the IDs
@@ -358,7 +362,6 @@ setGeneric("removeComparison", function(o, id) { standardGeneric("removeComparis
 #' @return A character vector of IDs
 #' @export
 #'
-#' @examples
 setMethod("getIds", signature = "dgeExperiment", function(o) sapply(o@comparisons, function(x) x@comparisonID))
 
 #' Gets the comparisons within this experiment by id.
@@ -369,7 +372,6 @@ setMethod("getIds", signature = "dgeExperiment", function(o) sapply(o@comparison
 #' @return An \code{dgeExperiment} object with the needed ids. If none found, NULL is returned.
 #' @export
 #'
-#' @examples
 setMethod("getComparisonById", signature = "dgeExperiment", function(o, id) {
     sc <- lapply(o@comparisons, function(x) {
         if (x@comparisonID %in% id) {
@@ -399,7 +401,6 @@ setMethod("getComparisonById", signature = "dgeExperiment", function(o, id) {
 #' @return The experiment with the comparison removed
 #' @export
 #'
-#' @examples
 setMethod("removeComparison", signature = "dgeExperiment", function(o, id) {
     sc <- lapply(o@comparisons, function(x) if (x@comparisonID %in% id) return(NULL) else return(x))
 
@@ -420,7 +421,6 @@ setMethod("removeComparison", signature = "dgeExperiment", function(o, id) {
 #' @return A list of objects of class `dgeComparison`.
 #' @export
 #'
-#' @examples
 setMethod("getAllComparisons", signature = "dgeExperiment", function(o) o@comparisons)
 
 #' Get total N
@@ -430,8 +430,6 @@ setMethod("getAllComparisons", signature = "dgeExperiment", function(o) o@compar
 #' @return The total number of animals in the experiment.
 #' @export
 #'
-#' @examples
-#' getTotalN(dgeExperiment)
 setMethod("getTotalN", signature = "dgeExperiment", function(o) o@totalN)
 
 #' Get one or many comparisons from an experiment object
@@ -452,9 +450,6 @@ setMethod("getTotalN", signature = "dgeExperiment", function(o) o@totalN)
 #' @return If no comparison is matched, `NULL` is returned, else an object of class `dgeExperiment` with the specified comparisons.
 #' @export
 #'
-#' @examples
-#' #getComparison(fslExperiment, groups = c("FSL", "FRL"))
-#' #getComparison(fslExperiment, region = "HPC")
 setMethod("getComparison", signature = "dgeExperiment",
           function(o, groups=NULL, model=NULL, treatment=NULL, timepoint=NULL, region=NULL, sex=NULL) {
 
@@ -550,7 +545,6 @@ setMethod("getComparison", signature = "dgeExperiment",
 #' @return A subsetted object of class `dgeExperiment`.
 #' @export
 #'
-#' @examples
 setMethod("[", signature = "dgeExperiment", function(x, i) {
 
     x@comparisons <- lapply(x@comparisons, function(a) a[i, ] )
@@ -569,7 +563,6 @@ setMethod("[", signature = "dgeExperiment", function(x, i) {
 #' @return An object of class`dgeExperiment`
 #' @export
 #'
-#' @examples
 dgeExperiment <- function(comparisons, description = "") {
 
     # all comparisons must be of the class dgeComparison
@@ -619,6 +612,8 @@ dgeExperiment <- function(comparisons, description = "") {
         sexes = unique(sapply(comparisons, getSex)),
         groups = unique(c(sapply(comparisons, getGroups))),
         totalN = sum(sapply(comparisons, getNs)),
+        owner = unique(sapply(comparisons, getOwner)),
+        public = all(sapply(comparisons, getPublic)),
         description = description
     )
 
