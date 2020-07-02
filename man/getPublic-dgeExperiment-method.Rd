@@ -2,30 +2,22 @@
 % Please edit documentation in R/dgeExperiment.R
 \name{getPublic,dgeExperiment-method}
 \alias{getPublic,dgeExperiment-method}
-<<<<<<< HEAD
 \title{Returns a boolean value which is TRUE if the data is universally accessible.}
-=======
-\title{Title}
->>>>>>> 7942bd79adcb41586780467972f5818a4b964d91
 \usage{
+\S4method{getPublic}{dgeExperiment}(o)
+
 \S4method{getPublic}{dgeExperiment}(o)
 }
 \arguments{
-<<<<<<< HEAD
-\item{o}{An object of class \code{dgeExperiment}}
+\item{o}{the object to check}
 }
 \value{
 A logical value, \code{TRUE} if it is public, \code{FALSE} otherwise.
+
+A \code{logical} value
 }
 \description{
 Returns a boolean value which is TRUE if the data is universally accessible.
-=======
-\item{dgeExperiment}{}
-}
-\value{
 
-}
-\description{
-Title
->>>>>>> 7942bd79adcb41586780467972f5818a4b964d91
+Flag to see if the data is public or not
 }

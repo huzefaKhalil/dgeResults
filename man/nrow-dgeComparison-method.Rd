@@ -15,6 +15,3 @@ Integer with the number of genes.
 \description{
 Returns the number of genes in the DE results
 }
-\examples{
-nrow(dge)
-}

@@ -24,11 +24,7 @@ NULL
 #' @slot groups The different groups in the experiment
 #' @slot totalN The total number of animals in this experiment
 #' @slot description Text describing the experiment. This is optional but highly recommended.
-<<<<<<< HEAD
 #' @slot owner The system lab name of the owner. Only useful if it is a private data set
-=======
-#' @slot owner The system username of the owner. Only useful if it is a private data set
->>>>>>> 7942bd79adcb41586780467972f5818a4b964d91
 #' @slot public Logical flag. If true, then the data set can be viewed by all with access to the system.
 #'
 #' @export
@@ -348,8 +344,6 @@ getComparison <- function(o, groups=NULL, model=NULL, treatment=NULL, timepoint=
 getComparisonById <- function(o, id) stop("Method undefined for an object of this class.")
 getTotalN <- function(o) stop("Method undefined for an object of this class.")
 getIds <- function(o) stop("Method undefined for an object of this class.")
-getOwner <- function(o) stop("Method undefined for an object of this class.")
-getPublic <- function(o) stop("Method undefined for an object of this class.")
 removeComparison <- function(o, id) stop("Method undefined for an object of this class.")
 
 setGeneric("getAllComparisons", function(o) { standardGeneric("getAllComparisons") })
@@ -357,13 +351,8 @@ setGeneric("getComparison", function(o, groups=NULL, model=NULL, treatment=NULL,
 setGeneric("getComparisonById", function(o, id) { standardGeneric("getComparisonById") })
 setGeneric("getTotalN", function(o) { standardGeneric("getTotalN") })
 setGeneric("getIds", function(o) { standardGeneric("getIds") })
-setGeneric("getOwner", function(o) { standardGeneric("getOwner") })
-setGeneric("getPublic", function(o) { standardGeneric("getPublic") })
 setGeneric("removeComparison", function(o, id) { standardGeneric("removeComparison") })
 
-<<<<<<< HEAD
-
-=======
 #' Returns the lab where this experiment was conducted. If it is private,
 #' only lab members will have access to this data.
 #'
@@ -372,19 +361,16 @@ setGeneric("removeComparison", function(o, id) { standardGeneric("removeComparis
 #' @return
 #' @export
 #'
-#' @examples
 setMethod("getOwner", signature = "dgeExperiment", function(o) o@owner)
 
-#' Title
+#' Flag to see if the data is public or not
 #'
-#' @param dgeExperiment
+#' @param o the object to check
 #'
-#' @return
+#' @return A \code{logical} value
 #' @export
 #'
-#' @examples
 setMethod("getPublic", signature = "dgeExperiment", function(o) o@public)
->>>>>>> 7942bd79adcb41586780467972f5818a4b964d91
 
 #' Get all the internal comparison IDs in this experiment
 #'
@@ -594,12 +580,7 @@ setMethod("[", signature = "dgeExperiment", function(x, i) {
 #' @return An object of class`dgeExperiment`
 #' @export
 #'
-<<<<<<< HEAD
 dgeExperiment <- function(comparisons, description = "") {
-=======
-#' @examples
-dgeExperiment <- function(comparisons, owner = NULL, public = TRUE, description = "") {
->>>>>>> 7942bd79adcb41586780467972f5818a4b964d91
 
     # all comparisons must be of the class dgeComparison
     stopifnot(all(sapply(comparisons, class) == "dgeComparison"))
@@ -648,13 +629,8 @@ dgeExperiment <- function(comparisons, owner = NULL, public = TRUE, description 
         sexes = unique(sapply(comparisons, getSex)),
         groups = unique(c(sapply(comparisons, getGroups))),
         totalN = sum(sapply(comparisons, getNs)),
-<<<<<<< HEAD
         owner = unique(sapply(comparisons, getOwner)),
         public = all(sapply(comparisons, getPublic)),
-=======
-        owner = owner,
-        public = public,
->>>>>>> 7942bd79adcb41586780467972f5818a4b964d91
         description = description
     )
 

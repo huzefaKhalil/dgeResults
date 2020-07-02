@@ -614,8 +614,6 @@ setMethod("printComparison", signature = "dgeComparison", function(o,
 #' @return Integer with the number of genes.
 #' @export
 #'
-#' @examples
-#' nrow(dge)
 setMethod("nrow", signature = "dgeComparison", function(x) nrow(x@deRes))
 
 #' Overloading names to get the name of the comparison
@@ -636,7 +634,6 @@ setMethod("names", signature = "dgeComparison", function(x) getName(x))
 #' @return An dgeComparison object with the specified DE results.
 #' @export
 #'
-#' @examples
 setMethod("[", signature = "dgeComparison", function(x, i) {
 
     # This only works if the key has been set or if i is logical
