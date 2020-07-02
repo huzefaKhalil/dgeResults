@@ -8,10 +8,17 @@ only lab members will have access to this data.}
 \S4method{getOwner}{dgeExperiment}(o)
 }
 \arguments{
+<<<<<<< HEAD
 \item{o}{An object of class \code{dgeExperiment}}
 }
 \value{
 A character string with the owner of the data. Returns \code{NULL} if not set.
+=======
+\item{dgeExperiment}{}
+}
+\value{
+
+>>>>>>> 7942bd79adcb41586780467972f5818a4b964d91
 }
 \description{
 Returns the lab where this experiment was conducted. If it is private,

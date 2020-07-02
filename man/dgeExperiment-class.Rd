@@ -38,7 +38,11 @@ this class from a list of comparisons.
 
 \item{\code{description}}{Text describing the experiment. This is optional but highly recommended.}
 
+<<<<<<< HEAD
 \item{\code{owner}}{The system lab name of the owner. Only useful if it is a private data set}
+=======
+\item{\code{owner}}{The system username of the owner. Only useful if it is a private data set}
+>>>>>>> 7942bd79adcb41586780467972f5818a4b964d91
 
 \item{\code{public}}{Logical flag. If true, then the data set can be viewed by all with access to the system.}
 }}

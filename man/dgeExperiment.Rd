@@ -4,7 +4,7 @@
 \alias{dgeExperiment}
 \title{Constructor for the `dgeExperiment` class.}
 \usage{
-dgeExperiment(comparisons, description = "")
+dgeExperiment(comparisons, owner = NULL, public = TRUE, description = "")
 }
 \arguments{
 \item{comparisons}{A `list` of comparisons belonging to the same experiment}
